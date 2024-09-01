@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 # /camaroo/
 # - /bin/
 # - /build/
-# - /camaroo-interpreter/
+# - /camaroo_interpreter/
 # ---- /src/ (.cpp)
 # -------- main.cpp
 # -------- something.cpp
