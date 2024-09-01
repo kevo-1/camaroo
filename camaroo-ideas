@@ -1,0 +1,83 @@
+use camaro-ideas-2
+
+##
+	multi-line comment
+	hiiiii
+##
+
+// single-line comment hiiiiiiiii
+
+// num sizes: 8, 16, 32, 64
+// fnum sizes: 32, 64
+
+// Return uses ->, if we want to return nothing, use nothing
+func calc(num32 x, num32 y) -> num32 {
+
+	return x // for value
+}
+
+func main() {
+	console.write("Welcome to Camaroo Language where Peter is always fa4el");
+	opened_file = file.open("text.txt", "w");
+	file.write(opened_file, "what to write");
+
+	num32 x = 6;
+	fnum32 y = 3.2;
+	func add = calc(num32 x, num32 y)
+	
+	letter l = 'w';
+	text t = "words dasjflkadsfois";
+
+	toggle m = true;
+	// logical operators: or and not
+	// bitwise operators: | & ~ ^
+
+	// conditional statements
+	if (x == y) {
+		
+	} else if (x > y) {
+
+	} else {
+
+	}
+
+	// loop if a condition is met
+	repeat while (x == y) {
+		console.write("peter is fa4el");
+	}
+
+	// loop if a condition isn't met
+	repeat until (x == y) {
+		console.write("peter is fa4el again");
+	}
+
+	// do something and repeat if condition is met
+	do {
+
+	} repeat while (x == y)
+
+	// do something and repeat if condition isn't met
+	do {
+
+	} repeat until (x == y)
+
+	// for loop where i is each element from the list in each iteration
+	for (num32 i, in [1, 2, 3]) {
+
+	}
+
+	// ranged for loop where i is from 0 to but not including 7
+	for (num32 i, in (0 to 7)) {
+
+	}
+
+	// for loop where i is from 2, the loop doesn't stop until i == 7
+	// Note: that in this loop and the range-based one you can specify the amount i changes by
+	for (num32 i = 2, until (i == 7), i+=2) {
+		skip; // for skipping one iteration
+		conclude; // for concluding the loop
+	}
+
+	end // for void
+}
+
