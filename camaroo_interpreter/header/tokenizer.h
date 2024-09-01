@@ -14,11 +14,13 @@ namespace camaroo_core
         multiple_comments, single_comment,
         equal_conditional, and_conditional, or_conditional, not_conditional
     };
+    
     struct Token
     {
         TokenType Token;
         std::string value;
     };
+
     class Tokenizer{
         Tokenizer(const std::string& text);
         void advance();
