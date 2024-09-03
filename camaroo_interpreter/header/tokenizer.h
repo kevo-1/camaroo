@@ -28,6 +28,10 @@ namespace camaroo_core {
 		std::string value;
 	};
 
+	bool operator==(const Token& lhs, const Token& rhs) {
+		return lhs.Token == rhs.Token && lhs.value == rhs.value;
+	}
+
 	class Tokenizer {
 		public:
 			Tokenizer(const std::string& text);

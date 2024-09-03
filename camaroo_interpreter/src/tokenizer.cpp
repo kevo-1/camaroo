@@ -20,7 +20,7 @@ namespace camaroo_core {
 
 	std::string Tokenizer::get_number() {
 		std::string result;
-		while (isdigit(current_char)) {
+		while (isdigit(current_char) || current_char == '.') {
 			result += current_char;
 			advance();
 		}

@@ -34,10 +34,15 @@ set_target_properties(camaroo
 project(CamarooTests CXX)
 file (GLOB_RECURSE TEST_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/camaroo_tests/src/**.cpp")
 set (TEST_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/camaroo_tests/header/")
-set (TEST_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/camaroo_interpreter/header/")
+set (CAMAROO_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/camaroo_interpreter/header/")
 
-add_executable(test_camaroo "${TEST_SOURCE}")
-target_include_directories(test_camaroo PUBLIC "${TEST_HEADER}" "${SOURCE}")
+# GoogleTest stuff
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/third_party/googletest")
+set (GOOGLE_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/third_party/googletest/include")
+
+add_executable(test_camaroo "${TEST_SOURCE}" "${SOURCE}")
+target_link_libraries(test_camaroo PUBLIC gtest)
+target_include_directories(test_camaroo PUBLIC "${TEST_HEADER}" "${CAMAROO_HEADER}" "${GOOGLE_HEADER}")
 set_target_properties(test_camaroo
     PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/Camaroo_Tests"
