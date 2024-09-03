@@ -1,7 +1,3 @@
-cmake_minimum_required(VERSION 3.13)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_STANDARD 20)
-
 # /camaroo/
 # - /bin/
 # - /build/
@@ -12,7 +8,17 @@ set(CMAKE_CXX_STANDARD 20)
 # ---- /header/ (.h)
 # -------- something.h
 # -------- somethingelse.h
-# - /camaroo-tests/
+# - /camaroo_tests/
+# ---- /src/ (.cpp)
+# -------- main.cpp
+# -------- something.cpp
+# ---- /header/ (.h)
+# -------- something.h
+# -------- somethingelse.h
+
+cmake_minimum_required(VERSION 3.13)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_STANDARD 20)
 
 project(Camaroo CXX)
 file (GLOB_RECURSE SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/camaroo_interpreter/src/**.cpp")
@@ -23,4 +29,16 @@ target_include_directories(camaroo PUBLIC "${HEADER}")
 set_target_properties(camaroo
     PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/Camaroo_Interpreter"
+)
+
+project(CamarooTests CXX)
+file (GLOB_RECURSE TEST_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/camaroo_tests/src/**.cpp")
+set (TEST_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/camaroo_tests/header/")
+set (TEST_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/camaroo_interpreter/header/")
+
+add_executable(test_camaroo "${TEST_SOURCE}")
+target_include_directories(test_camaroo PUBLIC "${TEST_HEADER}" "${SOURCE}")
+set_target_properties(test_camaroo
+    PROPERTIES
+	RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/Camaroo_Tests"
 )
