@@ -13,17 +13,18 @@ use camaro-ideas-2
 // Return uses ->, if we want to return nothing, use nothing
 func calc(num32 x, num32 y) -> num32 {
 
-	return x // for value
+	return x; // for value
 }
 
 func main() {
-	console.write("Welcome to Camaroo Language where Peter is always fa4el");
+	print("Welcome to Camaroo Language where Peter is always fa4el");
+	console.write("blah blah");
 	opened_file = file.open("text.txt", "w");
 	file.write(opened_file, "what to write");
 
 	num32 x = 6;
 	fnum32 y = 3.2;
-	func add = calc(num32 x, num32 y)
+	func add = calc(num32 x, num32 y);
 	
 	letter l = 'w';
 	text t = "words dasjflkadsfois";
@@ -78,6 +79,6 @@ func main() {
 		conclude; // for concluding the loop
 	}
 
-	end // for void
+	end; // for void
 }
 

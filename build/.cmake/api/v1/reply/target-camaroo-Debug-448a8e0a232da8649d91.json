@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "D:/Camaroo/bin/Camaroo-Interpreter/camaroo.exe"
+			"path" : "D:/Camaroo/bin/Camaroo_Interpreter/camaroo.exe"
 		},
 		{
-			"path" : "D:/Camaroo/bin/Camaroo-Interpreter/camaroo.pdb"
+			"path" : "D:/Camaroo/bin/Camaroo_Interpreter/camaroo.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -52,7 +52,7 @@
 			[
 				{
 					"backtrace" : 2,
-					"path" : "D:/Camaroo/camaroo-interpreter/header"
+					"path" : "D:/Camaroo/camaroo_interpreter/header"
 				}
 			],
 			"language" : "CXX",
@@ -114,13 +114,13 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "camaroo-interpreter/src/main.cpp",
+			"path" : "camaroo_interpreter/src/main.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "camaroo-interpreter/src/tokenizer.cpp",
+			"path" : "camaroo_interpreter/src/tokenizer.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],

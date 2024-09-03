@@ -9,10 +9,15 @@ namespace camaroo_core
         toggle,
         func,
         add, subtract, multiply, division, equal,
-        LParen, Rparen,
+        LParen, RParen,
         semicolon,
-        multiple_comments, single_comment,
-        equal_conditional, and_conditional, or_conditional, not_conditional
+        equal_conditional, and_conditional, or_conditional, not_conditional,
+        //variable names:
+        num8_type,num16_type,num32_type,num64_type,
+        fnum32_type,fnum64_type,
+        text_type,letter_type,
+        toggle_type,
+        func_type,
     };
     
     struct Token
@@ -27,9 +32,9 @@ namespace camaroo_core
         Token next_token();
         private:
             std::string get_number();
-            Token return_size_num(const std::string& result);
-            Token return_size_fnum(const std::string& result);
-            std::string get_text();
+            Token return_num_token(const std::string& result);
+            Token return_fnum_token(const std::string& result);
+            TokenType check_std_type(const std::string& result);
         private:
             std::string text;
             size_t pos;
