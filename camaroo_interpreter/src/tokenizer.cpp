@@ -24,27 +24,12 @@ namespace camaroo_core {
 			result += current_char;
 			advance();
 		}
+
 		return result;
 	}
 
-	Token Tokenizer::return_num_token(const std::string& result) {
-		if (std::stoll(result) > INT_MAX) {
-			return(Token{TokenType::num64, result});
-		} else if (std::stoi(result) > SHRT_MAX) {
-			return(Token{TokenType::num32, result});
-		} else if (std::stoi(result) > CHAR_MAX) {
-			return(Token{TokenType::num16, result});
-		} else {
-			return(Token{TokenType::num8, result});
-		}
-	}
-
-	Token Tokenizer::return_fnum_token(const std::string& result) {
-		if (std::stold(result) > FLT_MAX) {
-			return(Token{TokenType::fnum64, result});
-		} else {
-			return(Token{TokenType::fnum32, result});
-		}
+	bool operator==(const Token& lhs, const Token& rhs) {
+		return lhs.Token == rhs.Token && lhs.value == rhs.value;
 	}
 
 	TokenType Tokenizer::check_std_type(const std::string& result) {
@@ -74,15 +59,12 @@ namespace camaroo_core {
 	}
 
 	std::optional<Token> Tokenizer::next_token() {
-		while (current_char!= '\0') {
+		while (current_char != '\0') {
 			if (isdigit(current_char)) {
 				std::string result = get_number();
-				if (std::stoll(result) == std::stold(result)) {
-					return return_num_token(result);
-				}
-				else {
-					return return_fnum_token(result);
-				}
+				if (result.find('.') != std::string::npos)
+					return Token{TokenType::fnum, result};
+				return Token{TokenType::num, result};
 			}
 
 			if (current_char == '#') {
@@ -178,6 +160,8 @@ namespace camaroo_core {
 				advance();
 				return(Token{TokenType::equal, std::string("=")});
 			}
+
+			advance();
 		}
 		return std::nullopt;
 	}

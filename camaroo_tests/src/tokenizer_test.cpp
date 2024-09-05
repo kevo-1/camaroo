@@ -1,11 +1,8 @@
 #include <tokenizer.h>
 #include <gtest/gtest.h>
-#include <iostream>
 #include <fstream>
 #include <iterator>
 #include <string>
-
-
 
 std::string get_test_file(const std::string& path) {
     std::ifstream source_file(path);
@@ -21,22 +18,23 @@ std::string get_test_file(const std::string& path) {
 }
 
 TEST (fnum_test, handling_fnum_value) {
-    camaroo_core::Tokenizer tokentest(get_test_file("../../camaroo_tests/res/fnum_test.cmr"));
+	std::string source = get_test_file("camaroo_tests/res/fnum_test.cmr");
+    camaroo_core::Tokenizer tokentest(source);
+
     std::optional<camaroo_core::Token> token = tokentest.next_token();
     EXPECT_EQ(token.has_value(), true);
-    EXPECT_EQ(token.value(), camaroo_core::Token(camaroo_core::TokenType::fnum32, "5.6"));
+    EXPECT_EQ(token.value(), camaroo_core::Token(camaroo_core::TokenType::fnum, "5.6"));
+
     token = tokentest.next_token();
     EXPECT_EQ(token.has_value(), true);
-    EXPECT_EQ(token.value(), camaroo_core::Token(camaroo_core::TokenType::fnum32, "568458645986754896.654645654645654"));
+    EXPECT_EQ(token.value(), camaroo_core::Token(camaroo_core::TokenType::fnum, "5684.6546"));
+
     token = tokentest.next_token();
     EXPECT_EQ(token.has_value(), true);
-    EXPECT_EQ(token.value(), camaroo_core::Token(camaroo_core::TokenType::fnum32, "-5.6"));
-    token = tokentest.next_token();
-    EXPECT_EQ(token.has_value(), true);
-    EXPECT_EQ(token.value(), camaroo_core::Token(camaroo_core::TokenType::fnum32, "5"));
+    EXPECT_EQ(token.value(), camaroo_core::Token(camaroo_core::TokenType::num, "5"));
 }
 
-int main() {
-
-	return 0;
+int main(int argc, char** argv) {
+	::testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
 }

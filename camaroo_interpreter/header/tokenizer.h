@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 #include <optional>
 
@@ -5,8 +6,7 @@ namespace camaroo_core {
 	enum class TokenType {
 		unknown = 0,
 		// data values
-		num8, num16, num32, num64,
-		fnum32, fnum64,
+		num, fnum,
 		letter, text,
 		toggle,
 		// math operators
@@ -27,10 +27,8 @@ namespace camaroo_core {
 		TokenType Token;
 		std::string value;
 	};
-
-	bool operator==(const Token& lhs, const Token& rhs) {
-		return lhs.Token == rhs.Token && lhs.value == rhs.value;
-	}
+	
+	bool operator==(const Token& lhs, const Token& rhs);
 
 	class Tokenizer {
 		public:
