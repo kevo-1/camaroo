@@ -28,10 +28,6 @@ namespace camaroo_core {
 		return result;
 	}
 
-	bool operator==(const Token& lhs, const Token& rhs) {
-		return lhs.Token == rhs.Token && lhs.value == rhs.value;
-	}
-
 	TokenType Tokenizer::check_std_type(const std::string& result) {
 		if (result == "num8") {
 			return TokenType::num8_type;
@@ -53,6 +49,14 @@ namespace camaroo_core {
 			return TokenType::func_type;
 		} else if (result == "toggle") {
 			return TokenType::toggle_type;
+		} else if (result == "true" || result == "false") {
+			return TokenType::toggle;
+		} else if (result == "or") {
+			return TokenType::or_operator;
+		} else if (result == "and") {
+			return TokenType::and_operator;
+		} else if (result == "not") {
+			return TokenType::not_operator;
 		} else {
 			return TokenType::unknown;
 		}
@@ -84,6 +88,9 @@ namespace camaroo_core {
 					while (current_char != '\n') {
 						advance();
 					}
+				}
+				else{
+					return(Token{TokenType::division, "/"});
 				}
 			}
 
@@ -120,7 +127,7 @@ namespace camaroo_core {
 				std::string result = "";
 				result += current_char;
 				advance();
-				while (current_char != ' ') {
+				while (current_char != ' ' && current_char != ';' && current_char != '\n' && current_char != '\0') {
 					result += current_char;
 					advance();
 				}
@@ -140,10 +147,7 @@ namespace camaroo_core {
 				advance();
 				return(Token{TokenType::multiply, std::string("*")});
 			}
-			if (current_char == '/') {
-				advance();
-				return(Token{TokenType::division, std::string("/")});
-			}
+			
 			if (current_char == '(') {
 				advance();
 				return(Token{TokenType::LParen, std::string("(")});
@@ -158,6 +162,10 @@ namespace camaroo_core {
 			}
 			if (current_char == '=') {
 				advance();
+				if(current_char == '='){
+					advance();
+					return (Token{TokenType::equal_operator, std::string("==")});
+				}
 				return(Token{TokenType::equal, std::string("=")});
 			}
 

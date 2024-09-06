@@ -11,7 +11,8 @@ namespace camaroo_core {
 		toggle,
 		// math operators
 		add, subtract, multiply, division, equal,
-		equal_conditional, and_conditional, or_conditional, not_conditional,
+		//logical operators
+		equal_operator, and_operator, or_operator, not_operator,
 		// other
 		LParen, RParen,
 		semicolon,
@@ -24,11 +25,9 @@ namespace camaroo_core {
 	};
 
 	struct Token {
-		TokenType Token;
+		TokenType type;
 		std::string value;
 	};
-	
-	bool operator==(const Token& lhs, const Token& rhs);
 
 	class Tokenizer {
 		public:
