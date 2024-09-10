@@ -1,0 +1,5 @@
+num32 x = 5;
+fnum32 y = 3;
+text word = "Hello world";
+letter char = 'l';
+toggle flag = true;
