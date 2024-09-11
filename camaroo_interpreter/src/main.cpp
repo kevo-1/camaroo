@@ -2,7 +2,8 @@
 #include <fstream>
 #include <iterator>
 #include <string>
-#include "tokenizer.h"
+#include <tokenizer.h>
+#include <parser.h>
 
 const std::string version = "0.0.1";
 
@@ -11,7 +12,17 @@ void CLI_interface() {
     std::cout << ">>> ";
 }
 
-void process_line(const std::string& text) {
+void parse_line(const std::string& text) {
+	camaroo_core::Parser parser(text);
+	camaroo_core::Program program = parser.parse_program();
+
+	for (const auto& stmnt : program.statements) {
+		std::cout << "stmnt: ";
+		std::cout << stmnt->to_string() << "\n";
+	}
+}
+
+void tokenize_line(const std::string& text) {
    camaroo_core::Tokenizer temp_tokenizer(text);
    std::optional<camaroo_core::Token> token = temp_tokenizer.next_token();
    while (token.has_value()) {
@@ -19,8 +30,6 @@ void process_line(const std::string& text) {
         token = temp_tokenizer.next_token();
    }
 }
-
-
 
 int main(int argc, char** argv) {
     if (argc == 2) {
@@ -37,14 +46,14 @@ int main(int argc, char** argv) {
         std::cout << source_code << std::endl;
         return 0;
     }
-    
 
     CLI_interface();
     while (true) {
         std::string line; 
         std::getline(std::cin, line);
         if (line == "exit") break;
-        process_line(line);
+        // tokenize_line(line);
+		parse_line(line);
         std::cout << ">>> ";
     }
 

@@ -2,6 +2,7 @@
 
 #include <tokenizer.h>
 #include <string>
+#include <memory>
 
 namespace camaroo_core {
 
@@ -30,20 +31,20 @@ namespace camaroo_core {
 	// x = 5 + y;
 	class AssignStmnt : public StatementNode {
 	public:
-		AssignStmnt(IdentifierNode* left, ExpressionNode* right)
-			:identifier(left), expression(right) {}
+		AssignStmnt(Token type, std::unique_ptr<IdentifierNode> left, std::unique_ptr<ExpressionNode> right)
+			:assignType(type), identifier(std::move(left)), expression(std::move(right)) {}
 		virtual TokenType token_type() override { return assignType.type; }
-		IdentifierNode* get_identifier() { return identifier; }
-		ExpressionNode* get_expression() { return expression; }
 		virtual std::string to_string() override { return assignType.value + " " + identifier->to_string() + " = " + expression->to_string(); }
 	private:
 		Token assignType; // num64, num32, num16, num8, float64, float32, toggle, letter, text, func
-		IdentifierNode* identifier; // left node
-		ExpressionNode* expression; // right node
+		std::unique_ptr<IdentifierNode> identifier; // left node
+		std::unique_ptr<ExpressionNode> expression; // right node
 	};
 
 	class NumExpr : public ExpressionNode {
 	public:
+		NumExpr(Token token)
+			:numToken(token) {}
 		virtual TokenType token_type() override { return numToken.type; }
 		std::string get_value() { return numToken.value; }
 		virtual std::string to_string() override { return numToken.value; }

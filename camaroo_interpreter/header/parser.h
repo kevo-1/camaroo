@@ -7,7 +7,7 @@
 namespace camaroo_core {
 
 	struct Program {
-		std::vector<StatementNode*> statements;
+		std::vector<std::unique_ptr<StatementNode>> statements;
 	};
 
 	class Parser {
@@ -17,6 +17,7 @@ namespace camaroo_core {
 	private:
 		Token next_token();
 		std::unique_ptr<AssignStmnt> parse_assign_stmnt();
+		std::unique_ptr<AssignStmnt> parse_expression();
 	private:
 		std::optional<Token> current_token;
 		Tokenizer tokenizer;
