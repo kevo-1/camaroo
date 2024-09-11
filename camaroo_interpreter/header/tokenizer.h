@@ -5,6 +5,7 @@
 namespace camaroo_core {
 	enum class TokenType {
 		unknown = 0,
+		identifier,
 		// data values
 		num, fnum,
 		letter, text,
