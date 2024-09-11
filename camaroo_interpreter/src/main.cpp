@@ -16,10 +16,14 @@ void parse_line(const std::string& text) {
 	camaroo_core::Parser parser(text);
 	camaroo_core::Program program = parser.parse_program();
 
-	for (const auto& stmnt : program.statements) {
-		std::cout << "stmnt: ";
+	for (const auto& stmnt : program.statements)
 		std::cout << stmnt->to_string() << "\n";
+
+	if (parser.errors.size() > 0) {
+		for (const auto& err : parser.errors)
+			std::cout << err << "\n";
 	}
+
 }
 
 void tokenize_line(const std::string& text) {
