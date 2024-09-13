@@ -6,6 +6,18 @@
 
 namespace camaroo_core {
 
+
+	enum class ExprOrder {
+		unknown = 0,
+		lowest,
+		equals,
+		less_greater,
+		sum_diff,
+		product_div,
+		prefix, 		// -X or !X
+		call, 			// myFunction(X)
+	};
+
 	class Node {
 	public:
 		virtual TokenType token_type() = 0;
@@ -27,7 +39,7 @@ namespace camaroo_core {
 	};
 
 	// num32 x = 5;
-	// num32 y = 5;
+	// num32 y = 3;
 	// x = 5 + y;
 	class AssignStmnt : public StatementNode {
 	public:
@@ -41,16 +53,87 @@ namespace camaroo_core {
 		std::unique_ptr<ExpressionNode> expression; // right node
 	};
 
-	class NumExpr : public ExpressionNode {
+	class Num8Expr : public ExpressionNode {
 	public:
-		NumExpr(Token token)
-			:numToken(token) {}
+		Num8Expr(Token token)
+			:numToken(token), value(0)
+		{
+			int8_t v = static_cast<int8_t>(stoll(token.value));
+			if (v > INT8_MAX)
+				throw std::range_error("Error: Value is bigger than a num8");
+			if (v < INT8_MIN)
+				throw std::range_error("Error: Value is smaller than a num8");
+			value = stoll(token.value);
+		}
 		virtual TokenType token_type() override { return numToken.type; }
 		std::string get_value() { return numToken.value; }
 		virtual std::string to_string() override { return numToken.value; }
 	private:
 		Token numToken; // No nodes
+		int8_t value;
 	};
+
+	class Num16Expr : public ExpressionNode {
+	public:
+		Num16Expr(Token token)
+			:numToken(token), value(0)
+		{
+			int16_t v = static_cast<int16_t>(stoll(token.value));
+			if (v > INT16_MAX)
+				throw std::range_error("Error: Value is bigger than a num16");
+			if (v < INT16_MIN)
+				throw std::range_error("Error: Value is smaller than a num16");
+			value = stoll(token.value);
+		}
+		virtual TokenType token_type() override { return numToken.type; }
+		std::string get_value() { return numToken.value; }
+		virtual std::string to_string() override { return numToken.value; }
+	private:
+		Token numToken; // No nodes
+		int16_t value;
+	};
+
+	class Num32Expr : public ExpressionNode {
+	public:
+		Num32Expr(Token token)
+			:numToken(token), value(0)
+		{
+			int32_t v = static_cast<int32_t>(stoll(token.value));
+			if (v > INT32_MAX)
+				throw std::range_error("Error: Value is bigger than a num32");
+			if (v < INT32_MIN)
+				throw std::range_error("Error: Value is smaller than a num32");
+			value = stoll(token.value);
+		}
+		virtual TokenType token_type() override { return numToken.type; }
+		std::string get_value() { return numToken.value; }
+		virtual std::string to_string() override { return numToken.value; }
+	private:
+		Token numToken; // No nodes
+		int32_t value;
+	};
+
+	class Num64Expr : public ExpressionNode {
+	public:
+		Num64Expr(Token token)
+			:numToken(token), value(0)
+		{
+			int64_t v = stoll(token.value);
+			if (v > INT64_MAX)
+				throw std::range_error("Error: Value is bigger than a num64");
+			if (v < INT64_MIN)
+				throw std::range_error("Error: Value is smaller than a num64");
+			value = stoll(token.value);
+		}
+		virtual TokenType token_type() override { return numToken.type; }
+		std::string get_value() { return numToken.value; }
+		virtual std::string to_string() override { return numToken.value; }
+	private:
+		Token numToken; // No nodes
+		int64_t value;
+	};
+
+
 
 
 }
