@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <optional>
+#include <cinttypes>
 
 namespace camaroo_core {
 	enum class TokenType {
@@ -35,6 +36,7 @@ namespace camaroo_core {
 			Tokenizer(const std::string& text);
 			void advance();
 			std::optional<Token> next_token();
+			std::optional<Token> peek_next_token();
 		private:
 			std::string get_number();
 			Token return_num_token(const std::string& result);
@@ -44,5 +46,6 @@ namespace camaroo_core {
 			std::string text;
 			size_t pos;
 			char current_char;
+			int32_t token_size;
 	};
 }

@@ -5,12 +5,11 @@
 namespace camaroo_core {
 
 	Tokenizer::Tokenizer(const std::string& text)
-		:text(text), pos(0) {
-			current_char = text[pos];
-	}
+		:text(text), pos(0), current_char(text[pos]), token_size(0) {}
 
 	void Tokenizer::advance() {
 		++pos;
+		++token_size;
 		if (pos >= text.length()) {
 			current_char = '\0';
 		} else {
@@ -62,7 +61,15 @@ namespace camaroo_core {
 		}
 	}
 
+	std::optional<Token> Tokenizer::peek_next_token() {
+		std::optional<Token> temp_token = next_token();
+		pos -= token_size;
+		current_char = text[pos];
+		return temp_token;
+	}
+
 	std::optional<Token> Tokenizer::next_token() {
+		token_size = 0;
 		while (current_char != '\0') {
 			if (isdigit(current_char)) {
 				std::string result = get_number();
@@ -89,7 +96,7 @@ namespace camaroo_core {
 						advance();
 					}
 				}
-				else{
+				else {
 					return(Token{TokenType::division, "/"});
 				}
 			}
