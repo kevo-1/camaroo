@@ -6,14 +6,14 @@
 
 std::string get_test_file(const std::string& path) {
     std::ifstream source_file(path);
-	std::string source_code;
+    std::string source_code;
 
-	source_file.seekg(0, std::ios::end);
-	source_code.reserve(source_file.tellg());
-	source_file.seekg(0, std::ios::beg);
+    source_file.seekg(0, std::ios::end);
+    source_code.reserve(source_file.tellg());
+    source_file.seekg(0, std::ios::beg);
 
-	source_code.assign(std::istreambuf_iterator<char>(source_file),
-						std::istreambuf_iterator<char>());
+    source_code.assign(std::istreambuf_iterator<char>(source_file),
+                        std::istreambuf_iterator<char>());
     return source_code;
 }
 
@@ -21,11 +21,11 @@ std::string get_test_file(const std::string& path) {
 
 
 TEST (fnum_test, handling_fnum_value) {
-	std::string source = get_test_file("camaroo_tests/res/fnum_test.cmr");
+    std::string source = get_test_file("camaroo_tests/res/fnum_test.cmr");
     camaroo_core::Tokenizer tokentest(source);
 
     std::optional<camaroo_core::Token> token = tokentest.next_token();
-    
+
     EXPECT_TRUE(token.has_value() == true);
     EXPECT_TRUE(token.value().type == camaroo_core::TokenType::fnum);
     EXPECT_TRUE(token.value().value == "5.6");
@@ -46,11 +46,11 @@ TEST (fnum_test, handling_fnum_value) {
 
 
 TEST (letter_test, handling_letter_value) {
-	std::string source = get_test_file("camaroo_tests/res/letter_test.cmr");
+    std::string source = get_test_file("camaroo_tests/res/letter_test.cmr");
     camaroo_core::Tokenizer tokentest(source);
 
     std::optional<camaroo_core::Token> token = tokentest.next_token();
-    
+
     EXPECT_TRUE(token.has_value() == true);
     EXPECT_TRUE(token.value().type == camaroo_core::TokenType::letter);
     EXPECT_TRUE(token.value().value == "\'\\n\'");
@@ -97,11 +97,11 @@ TEST (letter_test, handling_letter_value) {
 
 
 TEST (text_test, handling_text_value) {
-	std::string source = get_test_file("camaroo_tests/res/text_test.cmr");
+    std::string source = get_test_file("camaroo_tests/res/text_test.cmr");
     camaroo_core::Tokenizer tokentest(source);
 
     std::optional<camaroo_core::Token> token = tokentest.next_token();
-    
+
     EXPECT_TRUE(token.has_value() == true);
     EXPECT_TRUE(token.value().type == camaroo_core::TokenType::text);
     EXPECT_TRUE(token.value().value == "\"hello world\\n\"");
@@ -127,11 +127,11 @@ TEST (text_test, handling_text_value) {
 
 
 TEST (toggle_test, handling_toggle_value) {
-	std::string source = get_test_file("camaroo_tests/res/toggle_value_test.cmr");
+    std::string source = get_test_file("camaroo_tests/res/toggle_value_test.cmr");
     camaroo_core::Tokenizer tokentest(source);
 
     std::optional<camaroo_core::Token> token = tokentest.next_token();
-    
+
     EXPECT_TRUE(token.has_value() == true);
     EXPECT_TRUE(token.value().type == camaroo_core::TokenType::toggle);
     EXPECT_TRUE(token.value().value == "true");
@@ -146,11 +146,11 @@ TEST (toggle_test, handling_toggle_value) {
 
 
 TEST (data_type_test, handling_data_types) {
-	std::string source = get_test_file("camaroo_tests/res/data_type_test.cmr");
+    std::string source = get_test_file("camaroo_tests/res/data_type_test.cmr");
     camaroo_core::Tokenizer tokentest(source);
 
     std::optional<camaroo_core::Token> token = tokentest.next_token();
-    
+
     EXPECT_TRUE(token.has_value() == true);
     EXPECT_TRUE(token.value().type == camaroo_core::TokenType::toggle_type);
     EXPECT_TRUE(token.value().value == "toggle");
@@ -203,11 +203,11 @@ TEST (data_type_test, handling_data_types) {
 
 
 TEST (logical_operators_test, handling_logical_operators) {
-	std::string source = get_test_file("camaroo_tests/res/logical_operators_test.cmr");
+    std::string source = get_test_file("camaroo_tests/res/logical_operators_test.cmr");
     camaroo_core::Tokenizer tokentest(source);
 
     std::optional<camaroo_core::Token> token = tokentest.next_token();
-    
+
     EXPECT_TRUE(token.has_value() == true);
     EXPECT_TRUE(token.value().type == camaroo_core::TokenType::and_operator);
     EXPECT_TRUE(token.value().value == "and");
@@ -232,11 +232,11 @@ TEST (logical_operators_test, handling_logical_operators) {
 
 
 TEST (mathematical_operators_test, handling_mathematical_operators) {
-	std::string source = get_test_file("camaroo_tests/res/math_operators_test.cmr");
+    std::string source = get_test_file("camaroo_tests/res/math_operators_test.cmr");
     camaroo_core::Tokenizer tokentest(source);
 
     std::optional<camaroo_core::Token> token = tokentest.next_token();
-    
+
     EXPECT_TRUE(token.has_value() == true);
     EXPECT_TRUE(token.value().type == camaroo_core::TokenType::add);
     EXPECT_TRUE(token.value().value == "+");
@@ -260,11 +260,11 @@ TEST (mathematical_operators_test, handling_mathematical_operators) {
 
 
 TEST (special_characters_test, handling_special_characters) {
-	std::string source = get_test_file("camaroo_tests/res/special_syntax_test.cmr");
+    std::string source = get_test_file("camaroo_tests/res/special_syntax_test.cmr");
     camaroo_core::Tokenizer tokentest(source);
 
     std::optional<camaroo_core::Token> token = tokentest.next_token();
-    
+
     EXPECT_TRUE(token.has_value() == true);
     EXPECT_TRUE(token.value().type == camaroo_core::TokenType::semicolon);
     EXPECT_TRUE(token.value().value == ";");
@@ -283,11 +283,11 @@ TEST (special_characters_test, handling_special_characters) {
 
 
 TEST (Statements_test, handling_statements) {
-	std::string source = get_test_file("camaroo_tests/res/statement_test.cmr");
+    std::string source = get_test_file("camaroo_tests/res/statement_test.cmr");
     camaroo_core::Tokenizer tokentest(source);
 
     std::optional<camaroo_core::Token> token = tokentest.next_token();
-    
+
     EXPECT_TRUE(token.has_value() == true);
     EXPECT_TRUE(token.value().type == camaroo_core::TokenType::num32_type);
     EXPECT_TRUE(token.value().value == "num32");
@@ -415,11 +415,11 @@ TEST (Statements_test, handling_statements) {
 
 
 TEST (peeking_a_token_test, handling_peek_token_function) {
-	std::string source = get_test_file("camaroo_tests/res/peeking_token_test.cmr");
+    std::string source = get_test_file("camaroo_tests/res/peeking_token_test.cmr");
     camaroo_core::Tokenizer tokentest(source);
 
     std::optional<camaroo_core::Token> token = tokentest.peek_next_token();
-    
+
     EXPECT_TRUE(token.has_value() == true);
     EXPECT_TRUE(token.value().type == camaroo_core::TokenType::num32_type);
     EXPECT_TRUE(token.value().value == "num32");
@@ -523,6 +523,6 @@ TEST (peeking_a_token_test, handling_peek_token_function) {
 
 
 int main(int argc, char** argv) {
-	::testing::InitGoogleTest(&argc, argv);
-	return RUN_ALL_TESTS();
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
