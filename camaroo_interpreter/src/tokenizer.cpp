@@ -57,7 +57,7 @@ namespace camaroo_core {
         } else if (result == "not") {
             return TokenType::not_operator;
         } else {
-            return TokenType::unknown;
+            return TokenType::identifier;
         }
     }
 
@@ -130,7 +130,7 @@ namespace camaroo_core {
                 return(Token{TokenType::text, result});
             }
 
-            if ((current_char >= 'a' && current_char <= 'z') || (current_char >= 'A' && current_char <= 'Z')) {
+            if ((current_char >= 'a' && current_char <= 'z') || (current_char >= 'A' && current_char <= 'Z') || (current_char == '_')) {
                 std::string result = "";
                 result += current_char;
                 advance();
@@ -154,7 +154,10 @@ namespace camaroo_core {
                 advance();
                 return(Token{TokenType::multiply, std::string("*")});
             }
-            
+            if (current_char == '%') {
+                advance();
+                return(Token{TokenType::modulo, std::string("%")});
+            }
             if (current_char == '(') {
                 advance();
                 return(Token{TokenType::LParen, std::string("(")});
@@ -162,6 +165,22 @@ namespace camaroo_core {
             if (current_char == ')') {
                 advance();
                 return(Token{TokenType::RParen, std::string(")")});
+            }
+            if (current_char == '{') {
+                advance();
+                return(Token{TokenType::LCurlyBrace, std::string("{")});
+            }
+            if (current_char == '}') {
+                advance();
+                return(Token{TokenType::RCurlyBrace, std::string("}")});
+            }
+            if (current_char == '[') {
+                advance();
+                return(Token{TokenType::LSquareBracket, std::string("[")});
+            }
+            if (current_char == ']') {
+                advance();
+                return(Token{TokenType::RSquareBracket, std::string("]")});
             }
             if (current_char == ';') {
                 advance();
@@ -175,7 +194,12 @@ namespace camaroo_core {
                 }
                 return(Token{TokenType::equal, std::string("=")});
             }
-
+            if (current_char != ' ' && current_char != '\n' && current_char != '\0') {
+                std::string result = "";
+                result+= current_char;
+                advance();
+                return Token{TokenType::unknown, std::string(result)};
+            }
             advance();
         }
         return std::nullopt;

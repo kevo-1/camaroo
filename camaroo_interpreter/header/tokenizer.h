@@ -12,11 +12,13 @@ namespace camaroo_core {
 		letter, text,
 		toggle,
 		// math operators
-		add, subtract, multiply, division, equal,
+		add, subtract, multiply, division, equal, modulo,
 		//logical operators
 		equal_operator, and_operator, or_operator, not_operator,
 		// other
+		LCurlyBrace, RCurlyBrace,
 		LParen, RParen,
+		LSquareBracket, RSquareBracket,
 		semicolon,
 		// data types
 		num8_type,num16_type,num32_type,num64_type,
@@ -34,10 +36,10 @@ namespace camaroo_core {
 	class Tokenizer {
 		public:
 			Tokenizer(const std::string& text);
-			void advance();
 			std::optional<Token> next_token();
 			std::optional<Token> peek_next_token();
 		private:
+			void advance();
 			std::string get_number();
 			Token return_num_token(const std::string& result);
 			Token return_fnum_token(const std::string& result);
