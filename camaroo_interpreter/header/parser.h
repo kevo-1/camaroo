@@ -25,8 +25,9 @@ namespace camaroo_core {
         std::unique_ptr<ExpressionNode> parse_num_expr();
         std::unique_ptr<ExpressionNode> parse_id_expr();
         std::unique_ptr<ExpressionNode> parse_infix_expr(std::unique_ptr<ExpressionNode> left_expr);
+        std::unique_ptr<ExpressionNode> parse_toggle_expr();
     private:
-        Token next_token();
+        void advance_token();
         ExprOrder current_precedence();
         ExprOrder next_precedence();
         bool validate_token(Token expected_token);
@@ -34,6 +35,7 @@ namespace camaroo_core {
         void found_error(std::string token_type);
     private:
         std::optional<Token> current_token;
+        std::optional<Token> next_token;
         Tokenizer tokenizer;
         std::unordered_map<TokenType, ExprOrder> precedences;
         std::unordered_map<TokenType, std::function<std::unique_ptr<ExpressionNode>()>> prefix_fns;

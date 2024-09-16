@@ -1,6 +1,7 @@
 #include <parser.h>
 #include <tokenizer.h>
 #include <ast.h>
+#include <iostream>
 
 #include <memory>
 #include <string>
@@ -8,13 +9,14 @@
 namespace camaroo_core {
 
     Parser::Parser(const std::string& source_code)
-        :current_token(std::nullopt), tokenizer(Tokenizer(source_code))
+        :current_token(std::nullopt), next_token(std::nullopt), tokenizer(Tokenizer(source_code))
     {
+        advance_token();
         using expr_ptr = std::unique_ptr<ExpressionNode>;
-        current_token = tokenizer.next_token();
 
         prefix_fns[TokenType::identifier] = [this]() -> expr_ptr { return this->parse_id_expr(); };
         prefix_fns[TokenType::num] = [this]() -> expr_ptr { return this->parse_num_expr(); };
+        prefix_fns[TokenType::toggle] = [this]() -> expr_ptr { return this->parse_toggle_expr(); };
 
         infix_fns[TokenType::add] = [this](expr_ptr expr) -> expr_ptr { return this->parse_infix_expr(std::move(expr)); };
         infix_fns[TokenType::subtract] = [this](expr_ptr expr) -> expr_ptr { return this->parse_infix_expr(std::move(expr)); };
@@ -96,14 +98,14 @@ namespace camaroo_core {
             if (stmnt) {
                 program.statements.push_back(std::move(stmnt));
             }
-            current_token = tokenizer.next_token();
+            advance_token();
         }
         return program;
     }
 
     std::unique_ptr<AssignStmnt> Parser::parse_assign_stmnt() {
         Token assign_type = current_token.value();
-        current_token = tokenizer.next_token();
+        advance_token();
 
         if (!validate_token(Token{TokenType::unknown, "identifier"}))
             return nullptr;
@@ -111,7 +113,7 @@ namespace camaroo_core {
         current_token.value().type = TokenType::identifier;
         std::unique_ptr<IdentifierNode> id = std::make_unique<IdentifierNode>(current_token.value().value);
         std::unique_ptr<ExpressionNode> value = nullptr;
-        current_token = tokenizer.next_token();
+        advance_token();
         std::vector valid_tokens = {Token({TokenType::semicolon, ";"}), Token({TokenType::equal, "="})};
         if (!validate_in_tokens(valid_tokens))
             return nullptr;
@@ -126,9 +128,13 @@ namespace camaroo_core {
             if (assign_type.type == TokenType::num64_type)
                 value = parse_num_expr();
         } else {
-            current_token = tokenizer.next_token();
+            advance_token();
             value = parse_expression(ExprOrder::lowest);
+            advance_token();
         }
+
+        if (!validate_token({TokenType::semicolon, ";"}))
+            return nullptr;
 
         return (id && value) ? std::make_unique<AssignStmnt>(assign_type, std::move(id), std::move(value)) : nullptr;
     }
@@ -141,7 +147,6 @@ namespace camaroo_core {
     }
 
     ExprOrder Parser::next_precedence() {
-        std::optional<Token> next_token = tokenizer.peek_next_token();
         if (!next_token.has_value())
             return ExprOrder::lowest;
 
@@ -149,6 +154,11 @@ namespace camaroo_core {
         if (it != precedences.end())
             return precedences[next_token.value().type];
         return ExprOrder::lowest;
+    }
+
+    void Parser::advance_token() {
+        current_token = tokenizer.next_token();
+        next_token = tokenizer.peek_next_token();
     }
 
     std::unique_ptr<ExpressionNode> Parser::parse_expression(ExprOrder precedence) {
@@ -167,13 +177,15 @@ namespace camaroo_core {
             return nullptr;
         }
 
-        std::optional<Token> next_token = tokenizer.peek_next_token();
         while (next_token.has_value()) {
             if (next_token.value().type == TokenType::semicolon || next_precedence() <= precedence)
                 break;
 
-            current_token = tokenizer.next_token();
-            next_token = tokenizer.peek_next_token();
+            advance_token();
+            if (!current_token.has_value()) {
+                errors.push_back("Error: expected ; but found none");
+                return nullptr;
+            }
             try {
                 left = infix_fns[current_token.value().type](std::move(left));
             } catch (std::exception& except) {
@@ -192,7 +204,7 @@ namespace camaroo_core {
     std::unique_ptr<ExpressionNode> Parser::parse_infix_expr(std::unique_ptr<ExpressionNode> left_expr) {
         Token infix_type = current_token.value();
         ExprOrder precedence = current_precedence();
-        current_token = tokenizer.next_token();
+        advance_token();
         if (!current_token.has_value())
             return nullptr;
 
@@ -203,6 +215,11 @@ namespace camaroo_core {
     std::unique_ptr<ExpressionNode> Parser::parse_id_expr() {
         return std::unique_ptr<IdentifierNode>(new IdentifierNode(current_token.value().value));
     }
+
+    std::unique_ptr<ExpressionNode> Parser::parse_toggle_expr() {
+        return std::unique_ptr<ToggleExpr>(new ToggleExpr(current_token.value()));
+    }
+
 
     std::unique_ptr<ExpressionNode> Parser::parse_num_expr() {
         if (current_token.value().type == TokenType::semicolon)
