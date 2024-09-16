@@ -107,7 +107,7 @@ namespace camaroo_core {
         Token assign_type = current_token.value();
         advance_token();
 
-        if (!validate_token(Token{TokenType::unknown, "identifier"}))
+        if (!validate_token(Token{TokenType::identifier, "identifier"}))
             return nullptr;
 
         current_token.value().type = TokenType::identifier;
