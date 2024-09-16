@@ -37,8 +37,8 @@ namespace camaroo_core {
 
     class IdentifierNode : public ExpressionNode {
     public:
-        IdentifierNode(const std::string& value)
-            :identifier({ TokenType::identifier, value }) {}
+        IdentifierNode(const Token& token)
+            :identifier(token) {}
 
         virtual TokenType token_type() override { return identifier.type; }
         virtual std::string token_value() override { return identifier.value; }
@@ -66,7 +66,7 @@ namespace camaroo_core {
     class InfixExpr : public ExpressionNode {
     public:
         InfixExpr(const Token& prefix_token, std::unique_ptr<ExpressionNode> left, 
-                                                 std::unique_ptr<ExpressionNode> right)
+                                                std::unique_ptr<ExpressionNode> right)
             :token(prefix_token), left_expr(std::move(left)), right_expr(std::move(right)) {}
 
         virtual TokenType token_type() override { return token.type; }
@@ -94,7 +94,7 @@ namespace camaroo_core {
     private:
         Token toggle_token;
     };
-
+    
     class Num8Expr : public ExpressionNode {
     public:
         Num8Expr(const Token& token)
@@ -195,6 +195,4 @@ namespace camaroo_core {
         std::shared_ptr<IdentifierNode> identifier; // left node
         std::shared_ptr<ExpressionNode> expression; // right node
     };
-
-
 }

@@ -17,6 +17,7 @@ namespace camaroo_core {
         prefix_fns[TokenType::identifier] = [this]() -> expr_ptr { return this->parse_id_expr(); };
         prefix_fns[TokenType::num] = [this]() -> expr_ptr { return this->parse_num_expr(); };
         prefix_fns[TokenType::toggle] = [this]() -> expr_ptr { return this->parse_toggle_expr(); };
+        prefix_fns[TokenType::subtract] = [this]() -> expr_ptr { return this->parse_prefix_expr(); };
 
         infix_fns[TokenType::add] = [this](expr_ptr expr) -> expr_ptr { return this->parse_infix_expr(std::move(expr)); };
         infix_fns[TokenType::subtract] = [this](expr_ptr expr) -> expr_ptr { return this->parse_infix_expr(std::move(expr)); };
@@ -111,7 +112,7 @@ namespace camaroo_core {
             return nullptr;
 
         current_token.value().type = TokenType::identifier;
-        std::unique_ptr<IdentifierNode> id = std::make_unique<IdentifierNode>(current_token.value().value);
+        std::unique_ptr<IdentifierNode> id = std::make_unique<IdentifierNode>(current_token.value());
         std::unique_ptr<ExpressionNode> value = nullptr;
         advance_token();
         std::vector valid_tokens = {Token({TokenType::semicolon, ";"}), Token({TokenType::equal, "="})};
@@ -132,9 +133,6 @@ namespace camaroo_core {
             value = parse_expression(ExprOrder::lowest);
             advance_token();
         }
-
-        if (!validate_token({TokenType::semicolon, ";"}))
-            return nullptr;
 
         return (id && value) ? std::make_unique<AssignStmnt>(assign_type, std::move(id), std::move(value)) : nullptr;
     }
@@ -189,7 +187,7 @@ namespace camaroo_core {
             try {
                 left = infix_fns[current_token.value().type](std::move(left));
             } catch (std::exception& except) {
-                return left;
+                return nullptr;
             }
 
             if (!left) {
@@ -213,13 +211,22 @@ namespace camaroo_core {
     }
 
     std::unique_ptr<ExpressionNode> Parser::parse_id_expr() {
-        return std::unique_ptr<IdentifierNode>(new IdentifierNode(current_token.value().value));
+        return std::unique_ptr<IdentifierNode>(new IdentifierNode(current_token.value()));
     }
 
     std::unique_ptr<ExpressionNode> Parser::parse_toggle_expr() {
         return std::unique_ptr<ToggleExpr>(new ToggleExpr(current_token.value()));
     }
 
+    std::unique_ptr<ExpressionNode> Parser::parse_prefix_expr() {
+        Token token = current_token.value();
+        ExprOrder precedence = current_precedence();
+        advance_token();
+        if (!current_token.has_value())
+            return nullptr;
+        std::unique_ptr<ExpressionNode> right_expr = parse_expression(precedence);
+        return std::unique_ptr<PrefixExpr>(new PrefixExpr(token, std::move(right_expr)));
+    }
 
     std::unique_ptr<ExpressionNode> Parser::parse_num_expr() {
         if (current_token.value().type == TokenType::semicolon)

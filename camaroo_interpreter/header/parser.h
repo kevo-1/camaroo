@@ -26,6 +26,8 @@ namespace camaroo_core {
         std::unique_ptr<ExpressionNode> parse_id_expr();
         std::unique_ptr<ExpressionNode> parse_infix_expr(std::unique_ptr<ExpressionNode> left_expr);
         std::unique_ptr<ExpressionNode> parse_toggle_expr();
+        std::unique_ptr<ExpressionNode> parse_prefix_expr();
+        
     private:
         void advance_token();
         ExprOrder current_precedence();
