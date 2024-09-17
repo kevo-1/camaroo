@@ -119,6 +119,8 @@ namespace camaroo_core {
                 std::string result = "\"";
                 advance();
                 while (true) {
+                    if (current_char == '\0')
+                        break;
                     if (current_char == '\"' && result[result.size()-1] != '\\') {
                         result += current_char;
                         advance();

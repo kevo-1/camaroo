@@ -94,17 +94,13 @@ namespace camaroo_core {
     private:
         Token toggle_token;
     };
-    
+
     class Num8Expr : public ExpressionNode {
     public:
         Num8Expr(const Token& token)
             :num_token(token), value(0)
         {
             int8_t v = static_cast<int8_t>(stoll(token.value));
-            if (v > INT8_MAX)
-                throw std::range_error("Error: Value is bigger than a num8");
-            if (v < INT8_MIN)
-                throw std::range_error("Error: Value is smaller than a num8");
             value = stoll(token.value);
         }
 
@@ -122,10 +118,6 @@ namespace camaroo_core {
             :num_token(token), value(0)
         {
             int16_t v = static_cast<int16_t>(stoll(token.value));
-            if (v > INT16_MAX)
-                throw std::range_error("Error: Value is bigger than a num16");
-            if (v < INT16_MIN)
-                throw std::range_error("Error: Value is smaller than a num16");
             value = stoll(token.value);
         }
 
@@ -143,10 +135,6 @@ namespace camaroo_core {
             :num_token(token), value(0)
         {
             int32_t v = static_cast<int32_t>(stoll(token.value));
-            if (v > INT32_MAX)
-                throw std::range_error("Error: Value is bigger than a num32");
-            if (v < INT32_MIN)
-                throw std::range_error("Error: Value is smaller than a num32");
             value = stoll(token.value);
         }
 
@@ -164,10 +152,6 @@ namespace camaroo_core {
             :num_token(token), value(0)
         {
             int64_t v = stoll(token.value);
-            if (v > INT64_MAX)
-                throw std::range_error("Error: Value is bigger than a num64");
-            if (v < INT64_MIN)
-                throw std::range_error("Error: Value is smaller than a num64");
             value = stoll(token.value);
         }
 

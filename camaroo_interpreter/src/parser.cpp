@@ -14,9 +14,20 @@ namespace camaroo_core {
         advance_token();
         using expr_ptr = std::unique_ptr<ExpressionNode>;
 
+        // Identifier/Values
         prefix_fns[TokenType::identifier] = [this]() -> expr_ptr { return this->parse_id_expr(); };
         prefix_fns[TokenType::num] = [this]() -> expr_ptr { return this->parse_num_expr(); };
+        prefix_fns[TokenType::fnum] = [this]() -> expr_ptr { return this->parse_num_expr(); };
         prefix_fns[TokenType::toggle] = [this]() -> expr_ptr { return this->parse_toggle_expr(); };
+        //Types
+        prefix_fns[TokenType::num8_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };
+        prefix_fns[TokenType::num16_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };
+        prefix_fns[TokenType::num32_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };
+        prefix_fns[TokenType::num64_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };
+        prefix_fns[TokenType::fnum32_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };
+        prefix_fns[TokenType::fnum64_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };       // FIX: this should be parsing fnum not num
+        prefix_fns[TokenType::toggle_type] = [this]() -> expr_ptr { return this->parse_toggle_expr(); };    // FIX: this should be parsing fnum not num
+        // Operations
         prefix_fns[TokenType::subtract] = [this]() -> expr_ptr { return this->parse_prefix_expr(); };
 
         infix_fns[TokenType::add] = [this](expr_ptr expr) -> expr_ptr { return this->parse_infix_expr(std::move(expr)); };
@@ -67,9 +78,31 @@ namespace camaroo_core {
     }
 
     void Parser::found_error(std::string token_type) {
-        std::string msg = "Expected next token to be " + token_type +
+        std::string msg = "Error: expected next token to be " + token_type +
                         " but found, " + (current_token.has_value() ? current_token.value().value : "null");
         errors.push_back(msg);
+    }
+
+    ExprOrder Parser::current_precedence() {
+        auto it = precedences.find(current_token.value().type);
+        if (it != precedences.end())
+            return precedences[current_token.value().type];
+        return ExprOrder::lowest;
+    }
+
+    ExprOrder Parser::next_precedence() {
+        if (!next_token.has_value())
+            return ExprOrder::lowest;
+
+        auto it = precedences.find(next_token.value().type);
+        if (it != precedences.end())
+            return precedences[next_token.value().type];
+        return ExprOrder::lowest;
+    }
+
+    void Parser::advance_token() {
+        current_token = tokenizer.next_token();
+        next_token = tokenizer.peek_next_token();
     }
 
     Program Parser::parse_program() {
@@ -98,6 +131,9 @@ namespace camaroo_core {
 
             if (stmnt) {
                 program.statements.push_back(std::move(stmnt));
+            } else {
+                errors.push_back("Error: statement is incorrect at " + current_token.value().value);
+                return program;
             }
             advance_token();
         }
@@ -120,58 +156,35 @@ namespace camaroo_core {
             return nullptr;
 
         if (current_token.value().type == TokenType::semicolon) {
-            if (assign_type.type == TokenType::num8_type)
-                value = parse_num_expr();
-            if (assign_type.type == TokenType::num16_type)
-                value = parse_num_expr();
-            if (assign_type.type == TokenType::num32_type)
-                value = parse_num_expr();
-            if (assign_type.type == TokenType::num64_type)
-                value = parse_num_expr();
+                value = prefix_fns[assign_type.type]();
         } else {
             advance_token();
             value = parse_expression(ExprOrder::lowest);
             advance_token();
         }
 
+        if (!validate_token({TokenType::semicolon, ";"}))
+            return nullptr;
+
         return (id && value) ? std::make_unique<AssignStmnt>(assign_type, std::move(id), std::move(value)) : nullptr;
     }
 
-    ExprOrder Parser::current_precedence() {
-        auto it = precedences.find(current_token.value().type);
-        if (it != precedences.end())
-            return precedences[current_token.value().type];
-        return ExprOrder::lowest;
-    }
-
-    ExprOrder Parser::next_precedence() {
-        if (!next_token.has_value())
-            return ExprOrder::lowest;
-
-        auto it = precedences.find(next_token.value().type);
-        if (it != precedences.end())
-            return precedences[next_token.value().type];
-        return ExprOrder::lowest;
-    }
-
-    void Parser::advance_token() {
-        current_token = tokenizer.next_token();
-        next_token = tokenizer.peek_next_token();
-    }
-
     std::unique_ptr<ExpressionNode> Parser::parse_expression(ExprOrder precedence) {
-        if (!current_token.has_value())
+        if (!current_token.has_value()) {
+            errors.push_back("Error: expected expression or ; but found none");
             return nullptr;
+        }
 
-        auto it = prefix_fns.find(current_token.value().type);
-        if (it == prefix_fns.end())
+        auto prefix_it = prefix_fns.find(current_token.value().type);
+        if (prefix_it == prefix_fns.end()) {
+            errors.push_back("Error: couldn't parse " + current_token.value().value);
             return nullptr;
+        }
 
-        std::unique_ptr<ExpressionNode> left;
-        try {
-            left = prefix_fns[current_token.value().type]();
-        } catch (std::exception& except) {
-            errors.push_back(except.what());
+        Token token_to_parse = current_token.value();
+        std::unique_ptr<ExpressionNode> left = prefix_fns[token_to_parse.type]();
+        if (!left) {
+            errors.push_back("Error: coudln't parse expression at " + token_to_parse.value);
             return nullptr;
         }
 
@@ -181,22 +194,41 @@ namespace camaroo_core {
 
             advance_token();
             if (!current_token.has_value()) {
-                errors.push_back("Error: expected ; but found none");
-                return nullptr;
-            }
-            try {
-                left = infix_fns[current_token.value().type](std::move(left));
-            } catch (std::exception& except) {
+                errors.push_back("Error: expected expression or ; but found none");
                 return nullptr;
             }
 
+            auto infix_it = infix_fns.find(current_token.value().type);
+            if (infix_it == infix_fns.end()) {
+                errors.push_back("Error: couldn't parse " + current_token.value().value);
+                return nullptr;
+            }
+
+            if (!current_token.has_value()) {
+                errors.push_back("Error: expected expression or ; but found none");
+                return nullptr;
+            }
+
+            token_to_parse = current_token.value();
+            left = infix_fns[token_to_parse.type](std::move(left));
+
             if (!left) {
-                errors.push_back("Error: expected expression after " + next_token.value().value);
+                errors.push_back("Error: coudln't parse expression at " + token_to_parse.value);
                 return nullptr;
             }
         }
 
         return left;
+    }
+
+    std::unique_ptr<ExpressionNode> Parser::parse_prefix_expr() {
+        Token token = current_token.value();
+        ExprOrder precedence = current_precedence();
+        advance_token();
+        if (!current_token.has_value())
+            return nullptr;
+        std::unique_ptr<ExpressionNode> right_expr = parse_expression(precedence);
+        return std::unique_ptr<PrefixExpr>(new PrefixExpr(token, std::move(right_expr)));
     }
 
     std::unique_ptr<ExpressionNode> Parser::parse_infix_expr(std::unique_ptr<ExpressionNode> left_expr) {
@@ -218,16 +250,6 @@ namespace camaroo_core {
         return std::unique_ptr<ToggleExpr>(new ToggleExpr(current_token.value()));
     }
 
-    std::unique_ptr<ExpressionNode> Parser::parse_prefix_expr() {
-        Token token = current_token.value();
-        ExprOrder precedence = current_precedence();
-        advance_token();
-        if (!current_token.has_value())
-            return nullptr;
-        std::unique_ptr<ExpressionNode> right_expr = parse_expression(precedence);
-        return std::unique_ptr<PrefixExpr>(new PrefixExpr(token, std::move(right_expr)));
-    }
-
     std::unique_ptr<ExpressionNode> Parser::parse_num_expr() {
         if (current_token.value().type == TokenType::semicolon)
             return std::unique_ptr<Num32Expr>(new Num32Expr(Token({TokenType::num, "0"})));
@@ -241,7 +263,9 @@ namespace camaroo_core {
             return std::unique_ptr<Num32Expr>(new Num32Expr(current_token.value()));
         else if (static_cast<int64_t>(val) < INT64_MAX && static_cast<int64_t>(val) > INT64_MIN)
             return std::unique_ptr<Num64Expr>(new Num64Expr(current_token.value()));
-        throw std::length_error("Error: max & min supported num is of size 64 bits");
+
+        errors.push_back("Error: couldn't convert number literal to correct size");
+        return nullptr;
     }
 
 }
