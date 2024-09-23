@@ -1,10 +1,11 @@
 #include <parser.h>
 #include <tokenizer.h>
 #include <ast.h>
-#include <iostream>
 #include <float.h>
 #include <memory>
 #include <string>
+
+#include <iostream>
 
 namespace camaroo_core {
 
@@ -19,6 +20,7 @@ namespace camaroo_core {
         prefix_fns[TokenType::num] = [this]() -> expr_ptr { return this->parse_num_expr(); };
         prefix_fns[TokenType::fnum] = [this]() -> expr_ptr { return this->parse_fnum_expr(); };
         prefix_fns[TokenType::toggle] = [this]() -> expr_ptr { return this->parse_toggle_expr(); };
+        prefix_fns[TokenType::LParen] = [this]() -> expr_ptr { return this->parse_grouped_expr(); };
         //Types
         prefix_fns[TokenType::num8_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };
         prefix_fns[TokenType::num16_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };
@@ -26,8 +28,8 @@ namespace camaroo_core {
         prefix_fns[TokenType::num64_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };
         prefix_fns[TokenType::fnum64_type] = [this]() -> expr_ptr { return this->parse_fnum_expr(); };
         prefix_fns[TokenType::toggle_type] = [this]() -> expr_ptr { return this->parse_toggle_expr(); };
-        // Operations
         prefix_fns[TokenType::subtract] = [this]() -> expr_ptr { return this->parse_prefix_expr(); };
+        // Operations
         infix_fns[TokenType::add] = [this](expr_ptr expr) -> expr_ptr { return this->parse_infix_expr(std::move(expr)); };
         infix_fns[TokenType::subtract] = [this](expr_ptr expr) -> expr_ptr { return this->parse_infix_expr(std::move(expr)); };
         infix_fns[TokenType::multiply] = [this](expr_ptr expr) -> expr_ptr { return this->parse_infix_expr(std::move(expr)); };
@@ -122,6 +124,11 @@ namespace camaroo_core {
                     if (errors.size() > 0)
                         return program;
                     break;
+                case TokenType::print:
+                    stmnt = parse_print_stmnt();
+                    if (errors.size() > 0)
+                        return program;
+                    break;
                 default:
                     break;
             }
@@ -136,7 +143,19 @@ namespace camaroo_core {
         }
         return program;
     }
+    std::unique_ptr<PrintStmnt> Parser::parse_print_stmnt() {
+        advance_token();
+        if (!validate_token({TokenType::LParen, "("}))
+            return nullptr;
 
+        std::unique_ptr<ExpressionNode> expr = parse_expression(ExprOrder::lowest);
+        advance_token();
+
+        if (!validate_token({TokenType::semicolon, ";"}))
+            return nullptr;
+
+        return (expr) ? std::make_unique<PrintStmnt>(std::move(expr)) : nullptr;
+    }
     std::unique_ptr<AssignStmnt> Parser::parse_assign_stmnt() {
         Token assign_type = current_token.value();
         advance_token();
@@ -239,6 +258,20 @@ namespace camaroo_core {
         return std::unique_ptr<ExpressionNode>(new InfixExpr(infix_type, std::move(left_expr), std::move(right_expr)));
     }
 
+    std::unique_ptr<ExpressionNode> Parser::parse_grouped_expr() {
+        advance_token();
+        if (!current_token.has_value())
+            return nullptr;
+
+        std::unique_ptr<ExpressionNode> expr = parse_expression(ExprOrder::lowest);
+        advance_token();
+
+        if (!validate_token({TokenType::RParen, ")"}))
+            return nullptr;
+
+        return expr;
+    }
+
     std::unique_ptr<ExpressionNode> Parser::parse_id_expr() {
         return std::unique_ptr<IdentifierNode>(new IdentifierNode(current_token.value()));
     }
@@ -272,7 +305,7 @@ namespace camaroo_core {
         size_t val = std::stod(current_token.value().value);
         if (static_cast<double>(val) < DBL_MAX && static_cast<double>(val) > DBL_MIN)
             return std::unique_ptr<Fnum64Expr>(new Fnum64Expr(current_token.value()));
-        
+
         errors.push_back("Error: couldn't convert float literal to correct size");
         return nullptr;
     }

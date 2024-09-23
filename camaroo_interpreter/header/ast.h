@@ -8,6 +8,7 @@ namespace camaroo_core {
 
     class Node {
     public:
+        virtual ~Node() = default;
         virtual TokenType token_type() = 0;
         virtual std::string token_value() = 0;
         virtual std::string to_string() = 0;

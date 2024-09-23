@@ -12,7 +12,6 @@ namespace camaroo_core {
         std::vector<std::unique_ptr<StatementNode>> statements;
     };
 
-
     class Parser {
     public:
         Parser(const std::string& source_code);
@@ -21,7 +20,9 @@ namespace camaroo_core {
         std::vector<std::string> errors;
     private:
         std::unique_ptr<AssignStmnt> parse_assign_stmnt();
+        std::unique_ptr<PrintStmnt> parse_print_stmnt();
         std::unique_ptr<ExpressionNode> parse_expression(ExprOrder precedent);
+        std::unique_ptr<ExpressionNode> parse_grouped_expr();
         std::unique_ptr<ExpressionNode> parse_num_expr();
         std::unique_ptr<ExpressionNode> parse_fnum_expr();
         std::unique_ptr<ExpressionNode> parse_id_expr();
