@@ -23,6 +23,7 @@ namespace camaroo_core {
         std::unique_ptr<AssignStmnt> parse_assign_stmnt();
         std::unique_ptr<ExpressionNode> parse_expression(ExprOrder precedent);
         std::unique_ptr<ExpressionNode> parse_num_expr();
+        std::unique_ptr<ExpressionNode> parse_fnum_expr();
         std::unique_ptr<ExpressionNode> parse_id_expr();
         std::unique_ptr<ExpressionNode> parse_infix_expr(std::unique_ptr<ExpressionNode> left_expr);
         std::unique_ptr<ExpressionNode> parse_toggle_expr();

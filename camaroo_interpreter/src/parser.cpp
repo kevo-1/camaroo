@@ -2,7 +2,7 @@
 #include <tokenizer.h>
 #include <ast.h>
 #include <iostream>
-
+#include <float.h>
 #include <memory>
 #include <string>
 
@@ -17,16 +17,15 @@ namespace camaroo_core {
         // Identifier/Values
         prefix_fns[TokenType::identifier] = [this]() -> expr_ptr { return this->parse_id_expr(); };
         prefix_fns[TokenType::num] = [this]() -> expr_ptr { return this->parse_num_expr(); };
-        prefix_fns[TokenType::fnum] = [this]() -> expr_ptr { return this->parse_num_expr(); };
+        prefix_fns[TokenType::fnum] = [this]() -> expr_ptr { return this->parse_fnum_expr(); };
         prefix_fns[TokenType::toggle] = [this]() -> expr_ptr { return this->parse_toggle_expr(); };
         //Types
         prefix_fns[TokenType::num8_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };
         prefix_fns[TokenType::num16_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };
         prefix_fns[TokenType::num32_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };
         prefix_fns[TokenType::num64_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };
-        prefix_fns[TokenType::fnum32_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };
-        prefix_fns[TokenType::fnum64_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };       // FIX: this should be parsing fnum not num
-        prefix_fns[TokenType::toggle_type] = [this]() -> expr_ptr { return this->parse_toggle_expr(); };    // FIX: this should be parsing fnum not num
+        prefix_fns[TokenType::fnum64_type] = [this]() -> expr_ptr { return this->parse_fnum_expr(); };
+        prefix_fns[TokenType::toggle_type] = [this]() -> expr_ptr { return this->parse_toggle_expr(); };
         // Operations
         prefix_fns[TokenType::subtract] = [this]() -> expr_ptr { return this->parse_prefix_expr(); };
 
@@ -118,7 +117,6 @@ namespace camaroo_core {
                 case TokenType::num16_type:
                 case TokenType::num32_type:
                 case TokenType::num64_type:
-                case TokenType::fnum32_type:
                 case TokenType::fnum64_type:
                 case TokenType::toggle_type:
                     stmnt = parse_assign_stmnt();
@@ -265,6 +263,18 @@ namespace camaroo_core {
             return std::unique_ptr<Num64Expr>(new Num64Expr(current_token.value()));
 
         errors.push_back("Error: couldn't convert number literal to correct size");
+        return nullptr;
+    }
+
+    std::unique_ptr<ExpressionNode> Parser::parse_fnum_expr() {
+        if (current_token.value().type == TokenType::semicolon)
+            return std::unique_ptr<Fnum64Expr>(new Fnum64Expr(Token({TokenType::fnum, "0"})));
+
+        size_t val = std::stod(current_token.value().value);
+        if (static_cast<double>(val) < DBL_MAX && static_cast<double>(val) > DBL_MIN)
+            return std::unique_ptr<Fnum64Expr>(new Fnum64Expr(current_token.value()));
+        
+        errors.push_back("Error: couldn't convert float literal to correct size");
         return nullptr;
     }
 

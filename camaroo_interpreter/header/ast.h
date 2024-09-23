@@ -163,6 +163,19 @@ namespace camaroo_core {
         int64_t value;
     };
 
+    class Fnum64Expr : public ExpressionNode {
+    public:
+        Fnum64Expr(const Token& token)
+            :num_token(token), value(stod(token.value)) {}
+
+        virtual TokenType token_type() override { return num_token.type; }
+        virtual std::string token_value() override { return num_token.value; }
+        virtual std::string to_string() override { return num_token.value; }
+    private:
+        Token num_token; // No nodes
+        double value;
+    };
+
     class AssignStmnt : public StatementNode {
     public:
         AssignStmnt(const Token& type, std::unique_ptr<IdentifierNode> left, std::unique_ptr<ExpressionNode> right)
