@@ -599,6 +599,62 @@ TEST (identifier_test, handling_identifiers) {
 
 
 
+TEST (printing_test, handling_print_statments) {
+    std::string source = get_test_file("camaroo_tests/res/printing_test.cmr");
+    camaroo_core::Tokenizer tokentest(source);
+
+    std::optional<camaroo_core::Token> token = tokentest.next_token();
+
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::print);
+    EXPECT_TRUE(token.value().value == "print");
+
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::LParen);
+    EXPECT_TRUE(token.value().value == "(");
+
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::text);
+    EXPECT_TRUE(token.value().value == "\"Hello world\"");
+
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::RParen);
+    EXPECT_TRUE(token.value().value == ")");
+    
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::semicolon);
+    EXPECT_TRUE(token.value().value == ";");
+
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::print);
+    EXPECT_TRUE(token.value().value == "print");
+
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::LParen);
+    EXPECT_TRUE(token.value().value == "(");
+
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::identifier);
+    EXPECT_TRUE(token.value().value == "x");
+
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::RParen);
+    EXPECT_TRUE(token.value().value == ")");
+
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::semicolon);
+    EXPECT_TRUE(token.value().value == ";");
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

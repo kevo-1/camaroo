@@ -56,6 +56,8 @@ namespace camaroo_core {
             return TokenType::and_operator;
         } else if (result == "not") {
             return TokenType::not_operator;
+        } else if (result == "print") {
+            return TokenType::print;
         } else {
             return TokenType::identifier;
         }
@@ -136,7 +138,7 @@ namespace camaroo_core {
                 std::string result = "";
                 result += current_char;
                 advance();
-                while (current_char != ' ' && current_char != ';' && current_char != '\n' && current_char != '\0') {
+                while (isalnum(current_char) && current_char != ' ' && current_char != ';' && current_char != '\n' && current_char != '\0') {
                     result += current_char;
                     advance();
                 }

@@ -26,6 +26,8 @@ namespace camaroo_core {
 		text_type,letter_type,
 		toggle_type,
 		func_type,
+		// print
+		print,
 	};
 
 	struct Token {
