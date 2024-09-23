@@ -192,4 +192,18 @@ namespace camaroo_core {
         std::shared_ptr<IdentifierNode> identifier; // left node
         std::shared_ptr<ExpressionNode> expression; // right node
     };
+
+    class PrintStmnt : public StatementNode {
+    public:
+        PrintStmnt(std::unique_ptr<ExpressionNode> printable)
+            :expr(std::move(printable)) {}
+
+        virtual TokenType token_type() override { return TokenType::print; }
+        virtual std::string token_value() override { return "print"; }
+        virtual std::string to_string() override { return "Print: " + expr->to_string(); }
+
+        std::weak_ptr<Node> get_right() override { return expr; }
+    private:
+        std::shared_ptr<ExpressionNode> expr;
+    };
 }

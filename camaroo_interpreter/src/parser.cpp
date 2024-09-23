@@ -28,7 +28,6 @@ namespace camaroo_core {
         prefix_fns[TokenType::toggle_type] = [this]() -> expr_ptr { return this->parse_toggle_expr(); };
         // Operations
         prefix_fns[TokenType::subtract] = [this]() -> expr_ptr { return this->parse_prefix_expr(); };
-
         infix_fns[TokenType::add] = [this](expr_ptr expr) -> expr_ptr { return this->parse_infix_expr(std::move(expr)); };
         infix_fns[TokenType::subtract] = [this](expr_ptr expr) -> expr_ptr { return this->parse_infix_expr(std::move(expr)); };
         infix_fns[TokenType::multiply] = [this](expr_ptr expr) -> expr_ptr { return this->parse_infix_expr(std::move(expr)); };
