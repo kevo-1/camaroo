@@ -5,8 +5,6 @@
 #include <memory>
 #include <string>
 
-#include <iostream>
-
 namespace camaroo_core {
 
     Parser::Parser(const std::string& source_code)
@@ -143,6 +141,7 @@ namespace camaroo_core {
         }
         return program;
     }
+
     std::unique_ptr<PrintStmnt> Parser::parse_print_stmnt() {
         advance_token();
         if (!validate_token({TokenType::LParen, "("}))
@@ -156,6 +155,7 @@ namespace camaroo_core {
 
         return (expr) ? std::make_unique<PrintStmnt>(std::move(expr)) : nullptr;
     }
+
     std::unique_ptr<AssignStmnt> Parser::parse_assign_stmnt() {
         Token assign_type = current_token.value();
         advance_token();
@@ -243,6 +243,7 @@ namespace camaroo_core {
         advance_token();
         if (!current_token.has_value())
             return nullptr;
+
         std::unique_ptr<ExpressionNode> right_expr = parse_expression(precedence);
         return std::unique_ptr<PrefixExpr>(new PrefixExpr(token, std::move(right_expr)));
     }
