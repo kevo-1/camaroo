@@ -4,6 +4,7 @@
 #include <string>
 #include <tokenizer.h>
 #include <parser.h>
+#include <evaluator.h>
 
 const std::string version = "0.0.1";
 
@@ -47,7 +48,8 @@ int main(int argc, char** argv) {
         source_code.assign(std::istreambuf_iterator<char>(source_file),
                     std::istreambuf_iterator<char>());
 
-        std::cout << source_code << std::endl;
+        camaroo_core::Parser parser(source_code);
+        camaroo_core::evaluate(parser.parse_program());
         return 0;
     }
 

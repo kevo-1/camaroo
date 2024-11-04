@@ -12,7 +12,7 @@ namespace camaroo_core {
     {
         advance_token();
         using expr_ptr = std::unique_ptr<ExpressionNode>;
-
+        
         // Identifier/Values
         prefix_fns[TokenType::identifier] = [this]() -> expr_ptr { return this->parse_id_expr(); };
         prefix_fns[TokenType::num] = [this]() -> expr_ptr { return this->parse_num_expr(); };
