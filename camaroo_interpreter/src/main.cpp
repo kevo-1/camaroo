@@ -8,14 +8,15 @@
 
 const std::string version = "0.0.1";
 
+camaroo_core::Program program;
+
 void CLI_interface() {
-    std::cout << "Welcome to Camaroo " << version << std::endl;
-    std::cout << ">>> ";
+    std::cout << "Welcome to Camaroo " << version << std::endl << ">>> ";
 }
 
 void parse_line(const std::string& text) {
     camaroo_core::Parser parser(text);
-    camaroo_core::Program program = parser.parse_program();
+    program = parser.parse_program();
 
     for (const auto& stmnt : program.statements)
         std::cout << stmnt->to_string() << "\n";
@@ -59,6 +60,12 @@ int main(int argc, char** argv) {
         if (line == "exit") break;
         // tokenize_line(line);
         parse_line(line);
+        camaroo_core::evaluator evalute;
+        evalute.evaluate_program(program);
+        for (const auto& var : evalute.get_variables()) {
+            std::cout << var.first << ": " << std::get<int64_t>(var.second->variable_value) << std::endl;
+        }
+
         std::cout << ">>> ";
     }
 

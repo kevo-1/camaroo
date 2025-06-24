@@ -5,14 +5,17 @@
 #include <string>
 #include <memory>
 #include <exception>
+#include <variant>
 
 namespace camaroo_core {
+
+    using ASTValue = std::variant<int8_t, int16_t, int32_t, int64_t, bool, float, std::string>;
 
     class ASTNode {
     public:
         virtual ~ASTNode() = default;
         virtual TokenType token_type() = 0;
-        virtual std::string token_value() = 0;
+        virtual ASTValue token_value() = 0;
         virtual std::string to_string() = 0;
 
         virtual std::string get_node_type() = 0;
@@ -23,6 +26,7 @@ namespace camaroo_core {
     class StatementNode : public ASTNode {
         virtual std::string get_node_type() override { return "Statement Node"; };
     };
+
     class ExpressionNode : public ASTNode {
         virtual std::string get_node_type() override { return "Expression Node"; };
     };
@@ -44,7 +48,7 @@ namespace camaroo_core {
             :identifier(token) {}
 
         virtual TokenType token_type() override { return identifier.type; }
-        virtual std::string token_value() override { return identifier.value; }
+        virtual ASTValue token_value() override { return identifier.value; }
 
         virtual std::string to_string() override { return "ID: " + identifier.value; }
     private:
@@ -57,7 +61,7 @@ namespace camaroo_core {
             :token(prefix_token), expr(std::move(right)) {}
 
         virtual TokenType token_type() override { return token.type; }
-        virtual std::string token_value() override { return token.value; }
+        virtual ASTValue token_value() override { return token.value; }
         virtual std::string to_string() override { return token.value + " " + expr->to_string(); }
 
         virtual ASTNode* get_right() override { return expr.get(); }
@@ -73,7 +77,7 @@ namespace camaroo_core {
             :token(prefix_token), left_expr(std::move(left)), right_expr(std::move(right)) {}
 
         virtual TokenType token_type() override { return token.type; }
-        virtual std::string token_value() override { return token.value; }
+        virtual ASTValue token_value() override { return token.value; }
         virtual std::string to_string() override {
             return "(" + left_expr->to_string() + " " + token.value + " " + right_expr->to_string() + ")";
         }
@@ -101,7 +105,7 @@ namespace camaroo_core {
         }
 
         virtual TokenType token_type() override { return toggle_token.type; }
-        virtual std::string token_value() override { return toggle_token.value; }
+        virtual ASTValue token_value() override { return toggle_token.value; }
         virtual std::string to_string() override { return toggle_token.value; }
         bool get_literal() { return literal_value; }
     private:
@@ -121,7 +125,7 @@ namespace camaroo_core {
         }
 
         virtual TokenType token_type() override { return num_token.type; }
-        virtual std::string token_value() override { return num_token.value; }
+        virtual ASTValue token_value() override { return literal_value; }
         virtual std::string to_string() override { return num_token.value; }
         int8_t get_literal() { return literal_value; }
     private:
@@ -142,7 +146,7 @@ namespace camaroo_core {
         }
 
         virtual TokenType token_type() override { return num_token.type; }
-        virtual std::string token_value() override { return num_token.value; }
+        virtual ASTValue token_value() override { return num_token.value; }
         virtual std::string to_string() override { return num_token.value; }
         int16_t get_literal() { return literal_value; }
     private:
@@ -162,7 +166,7 @@ namespace camaroo_core {
         }
 
         virtual TokenType token_type() override { return num_token.type; }
-        virtual std::string token_value() override { return num_token.value; }
+        virtual ASTValue token_value() override { return num_token.value; }
         virtual std::string to_string() override { return num_token.value; }
         int32_t get_literal() { return literal_value; }
     private:
@@ -170,9 +174,9 @@ namespace camaroo_core {
         int32_t literal_value;
     };
 
-    class Num64Expr : public ExpressionNode {
+    class NumExpr : public ExpressionNode {
     public:
-        Num64Expr(const Token& token)
+        NumExpr(const Token& token)
             :num_token(token)
         {
             size_t val = std::stoll(token.value);
@@ -182,7 +186,7 @@ namespace camaroo_core {
         }
 
         virtual TokenType token_type() override { return num_token.type; }
-        virtual std::string token_value() override { return num_token.value; }
+        virtual ASTValue token_value() override { return literal_value; }
         virtual std::string to_string() override { return num_token.value; }
         int64_t get_literal() { return literal_value; }
     private:
@@ -199,7 +203,7 @@ namespace camaroo_core {
         }
 
         virtual TokenType token_type() override { return num_token.type; }
-        virtual std::string token_value() override { return num_token.value; }
+        virtual ASTValue token_value() override { return num_token.value; }
         virtual std::string to_string() override { return num_token.value; }
         float get_literal() { return literal_value; }
     private:
@@ -213,7 +217,7 @@ namespace camaroo_core {
             :assignType(type), identifier(std::move(left)), expression(std::move(right)) {}
 
         virtual TokenType token_type() override { return assignType.type; }
-        virtual std::string token_value() override { return assignType.value; }
+        virtual ASTValue token_value() override { return assignType.value; }
         virtual std::string to_string() override { return assignType.value + " " + identifier->to_string() + " = " + expression->to_string(); }
 
         virtual ASTNode* get_left() override { return identifier.get(); }
@@ -230,7 +234,7 @@ namespace camaroo_core {
             :expr(std::move(printable)) {}
 
         virtual TokenType token_type() override { return TokenType::print; }
-        virtual std::string token_value() override { return "print"; }
+        virtual ASTValue token_value() override { return "print"; }
         virtual std::string to_string() override { return "Print: " + expr->to_string(); }
 
         virtual ASTNode* get_right() override { return expr.get(); }

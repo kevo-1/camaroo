@@ -283,17 +283,11 @@ namespace camaroo_core {
 
     std::unique_ptr<ExpressionNode> Parser::parse_num_expr() {
         if (current_token.value().type == TokenType::semicolon)
-            return std::unique_ptr<Num32Expr>(new Num32Expr(Token({TokenType::num, "0"})));
+            return std::unique_ptr<NumExpr>(new NumExpr(Token({TokenType::num, "0"})));
 
         size_t val = std::stoll(current_token.value().value);
-        if (static_cast<int8_t>(val) < INT8_MAX && static_cast<int8_t>(val) > INT8_MIN)
-            return std::unique_ptr<Num8Expr>(new Num8Expr(current_token.value()));
-        else if (static_cast<int16_t>(val) < INT16_MAX && static_cast<int16_t>(val) > INT16_MIN)
-            return std::unique_ptr<Num16Expr>(new Num16Expr(current_token.value()));
-        else if (static_cast<int32_t>(val) < INT32_MAX && static_cast<int32_t>(val) > INT32_MIN)
-            return std::unique_ptr<Num32Expr>(new Num32Expr(current_token.value()));
-        else if (static_cast<int64_t>(val) < INT64_MAX && static_cast<int64_t>(val) > INT64_MIN)
-            return std::unique_ptr<Num64Expr>(new Num64Expr(current_token.value()));
+        if (static_cast<int64_t>(val) < INT64_MAX && static_cast<int64_t>(val) > INT64_MIN)
+            return std::unique_ptr<NumExpr>(new NumExpr(current_token.value()));
 
         errors.push_back("Error: couldn't convert number literal to correct size");
         return nullptr;
