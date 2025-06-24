@@ -50,6 +50,9 @@ int main(int argc, char** argv) {
                     std::istreambuf_iterator<char>());
 
         camaroo_core::Parser parser(source_code);
+        program = parser.parse_program();
+        camaroo_core::evaluator evalute;
+        evalute.evaluate_program(program);
         return 0;
     }
 

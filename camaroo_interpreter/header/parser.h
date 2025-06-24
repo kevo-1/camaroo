@@ -33,7 +33,7 @@ namespace camaroo_core {
         void advance_token();
         ExprOrder current_precedence();
         ExprOrder next_precedence();
-        bool validate_token(Token expected_token);
+        bool validate_token(Token expected_token, bool error = true);
         bool validate_in_tokens(std::vector<Token>& expected_tokens);
         void found_error(std::string token_type);
     private:

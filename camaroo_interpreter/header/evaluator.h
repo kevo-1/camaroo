@@ -18,11 +18,11 @@ namespace camaroo_core {
         void evaluate_program(const Program& program);
         void evaluate_statement(ASTNode* statement);
 
-        camaroo_object* evaluate_expression(ASTNode* statement);
-        camaroo_object* get_variable(const std::string& var_name) { return declared_variables[var_name]; }
-        const std::unordered_map<std::string, camaroo_object*>& get_variables() { return declared_variables; }
+        std::shared_ptr<camaroo_object> evaluate_expression(ASTNode* statement);
+        camaroo_object* get_variable(const std::string& var_name) { return declared_variables[var_name].get(); }
+        const std::unordered_map<std::string, std::shared_ptr<camaroo_object>>& get_variables() { return declared_variables; }
 
     private:
-        std::unordered_map<std::string, camaroo_object*> declared_variables;
+        std::unordered_map<std::string, std::shared_ptr<camaroo_object>> declared_variables;
     };
 }

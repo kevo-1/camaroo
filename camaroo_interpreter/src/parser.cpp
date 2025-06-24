@@ -61,14 +61,16 @@ namespace camaroo_core {
         return false;
     }
 
-    bool Parser::validate_token(Token expected_token) {
+    bool Parser::validate_token(Token expected_token, bool error) {
         if (!current_token.has_value()) {
-            found_error(expected_token.value);
+            if (error)
+                found_error(expected_token.value);
             return false;
         }
 
         if (current_token.value().type != expected_token.type) {
-            found_error(expected_token.value);
+            if (error)
+                found_error(expected_token.value);
             return false;
         }
 
@@ -118,6 +120,7 @@ namespace camaroo_core {
                 case TokenType::num64_type:
                 case TokenType::fnum64_type:
                 case TokenType::toggle_type:
+                case TokenType::identifier:
                     stmnt = parse_assign_stmnt();
                     if (errors.size() > 0)
                         return program;
@@ -157,16 +160,20 @@ namespace camaroo_core {
     }
 
     std::unique_ptr<AssignStmnt> Parser::parse_assign_stmnt() {
-        Token assign_type = current_token.value();
-        advance_token();
+        Token assign_type = {TokenType::equal, "equal"};
+        if (!validate_token(Token{TokenType::identifier, "identifier"}, false)) {
+             assign_type = current_token.value();
+             advance_token();
+        }
 
-        if (!validate_token(Token{TokenType::identifier, "identifier"}))
-            return nullptr;
-
-        current_token.value().type = TokenType::identifier;
-        std::unique_ptr<IdentifierNode> id = std::make_unique<IdentifierNode>(current_token.value());
+        std::unique_ptr<IdentifierNode> id = nullptr;
         std::unique_ptr<ExpressionNode> value = nullptr;
-        advance_token();
+        if (validate_token(Token{TokenType::identifier, "identifier"})) {
+            current_token.value().type = TokenType::identifier;
+            id = std::make_unique<IdentifierNode>(current_token.value());
+            advance_token();
+        }
+
         std::vector valid_tokens = {Token({TokenType::semicolon, ";"}), Token({TokenType::equal, "="})};
         if (!validate_in_tokens(valid_tokens))
             return nullptr;
@@ -182,7 +189,7 @@ namespace camaroo_core {
         if (!validate_token({TokenType::semicolon, ";"}))
             return nullptr;
 
-        return (id && value) ? std::make_unique<AssignStmnt>(assign_type, std::move(id), std::move(value)) : nullptr;
+        return (value) ? std::make_unique<AssignStmnt>(assign_type, std::move(id), std::move(value)) : nullptr;
     }
 
     std::unique_ptr<ExpressionNode> Parser::parse_expression(ExprOrder precedence) {
@@ -295,11 +302,11 @@ namespace camaroo_core {
 
     std::unique_ptr<ExpressionNode> Parser::parse_fnum_expr() {
         if (current_token.value().type == TokenType::semicolon)
-            return std::unique_ptr<Fnum64Expr>(new Fnum64Expr(Token({TokenType::fnum, "0"})));
+            return std::unique_ptr<FNumExpr>(new FNumExpr(Token({TokenType::fnum, "0"})));
 
-        size_t val = std::stod(current_token.value().value);
+        size_t val = std::stof(current_token.value().value);
         if (static_cast<double>(val) < DBL_MAX && static_cast<double>(val) > DBL_MIN)
-            return std::unique_ptr<Fnum64Expr>(new Fnum64Expr(current_token.value()));
+            return std::unique_ptr<FNumExpr>(new FNumExpr(current_token.value()));
 
         errors.push_back("Error: couldn't convert float literal to correct size");
         return nullptr;
