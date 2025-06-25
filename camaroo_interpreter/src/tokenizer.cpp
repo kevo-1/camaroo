@@ -120,6 +120,17 @@ namespace camaroo_core {
                         advance();
                         break;
                     }
+                    if (current_char == '\\') {
+                        advance();
+                        if (current_char == 'n') {
+                            result += '\n';
+                        } else if (current_char == 't') {
+                            result += '\t';
+                        }
+                        advance();
+                        continue;
+                    }
+
                     result += current_char;
                     advance();
                 }

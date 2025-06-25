@@ -62,21 +62,12 @@ int main(int argc, char **argv)
     while (true)
     {
         std::string line;
-        std::getline(std::cin, line);
-        
-        std::string newLine;
-        for (int i = 0; i < line.size(); i++) {
-            if (line[i] == '\\') {
-                i++;
-            }
+        getline(std::cin, line);
 
-            newLine += line[i];
-        }
-
-        if (newLine == "exit")
+        if (line == "exit")
             break;
         // tokenize_line(line);
-        parse_line(newLine);
+        parse_line(line);
         if (!program.has_compiled) {
             return -1; // should be replaced by error
         }

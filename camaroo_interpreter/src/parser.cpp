@@ -9,7 +9,7 @@
 namespace camaroo_core {
 
     Parser::Parser(const std::string& source_code)
-        :current_token(std::nullopt), next_token(std::nullopt), tokenizer(Tokenizer(source_code))
+        :current_token(std::nullopt), next_token(std::nullopt), tokenizer(source_code)
     {
         advance_token();
         using expr_ptr = std::unique_ptr<ExpressionNode>;
