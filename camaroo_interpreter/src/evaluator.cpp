@@ -2,13 +2,17 @@
 #include "evaluator.h"
 
 #include <iostream>
+#include <algorithm>
 
 namespace camaroo_core {
 
     void evaluator::evaluate_program(const Program& program) {
-        for(const auto& statement : program.statements) {
+        std::vector<TokenType> types = {TokenType::num_type, TokenType::text_type};
+
+        for (const auto& statement : program.statements) {
             // TODO: Should be moved into evaluate_statement
-            if (statement->token_type() == TokenType::num64_type) {
+            const auto& it = std::find(types.begin(), types.end(), statement->token_type());
+            if (it != types.end()) {
                 ASTNode* id = statement->get_left();
                 std::string variable_name = std::get<std::string>(id->token_value());
                 std::shared_ptr<camaroo_object> variable_value = evaluate_expression(statement->get_right());
@@ -28,6 +32,8 @@ namespace camaroo_core {
                 std::shared_ptr<camaroo_object> value = evaluate_expression(statement->get_right());
                 if (value->variable_type == TokenType::num) {
                     printf("%i", std::get<int64_t>(value->variable_value));
+                } else if (value->variable_type == TokenType::text) {
+                    std::cout << std::get<std::string>(value->variable_value);
                 }
                 continue;
             }
@@ -41,8 +47,9 @@ namespace camaroo_core {
 
         if (statement->token_type() == TokenType::identifier) {
             try {
-                declared_variables[std::get<std::string>(statement->token_value())];
-            } catch(const std::exception& e) {
+                return declared_variables[std::get<std::string>(statement->token_value())];
+            }
+            catch (const std::exception& e) {
                 std::cerr << e.what() << '\n';
             }
         }
@@ -54,6 +61,13 @@ namespace camaroo_core {
             return new_object;
         }
 
+        if (statement->token_type() == TokenType::text) {
+            std::shared_ptr<camaroo_object> new_object = std::make_shared<camaroo_object>();
+            new_object->variable_type = TokenType::text;
+            new_object->variable_value = std::get<std::string>(statement->token_value());
+            return new_object;
+        }
+
         if (statement->token_type() == TokenType::add) {
             std::shared_ptr<camaroo_object> left = evaluate_expression(statement->get_left());
             std::shared_ptr<camaroo_object> right = evaluate_expression(statement->get_right());
@@ -61,7 +75,7 @@ namespace camaroo_core {
             try {
                 value = std::get<int64_t>(left->variable_value) + std::get<int64_t>(right->variable_value);
             }
-            catch(const std::exception& e) {
+            catch (const std::exception& e) {
                 std::cerr << e.what() << '\n';
             }
 
@@ -78,7 +92,7 @@ namespace camaroo_core {
             try {
                 value = std::get<int64_t>(left->variable_value) - std::get<int64_t>(right->variable_value);
             }
-            catch(const std::exception& e) {
+            catch (const std::exception& e) {
                 std::cerr << e.what() << '\n';
             }
 
@@ -95,10 +109,10 @@ namespace camaroo_core {
             try {
                 value = std::get<int64_t>(left->variable_value) * std::get<int64_t>(right->variable_value);
             }
-            catch(const std::exception& e) {
+            catch (const std::exception& e) {
                 std::cerr << e.what() << '\n';
             }
-            
+
             std::shared_ptr<camaroo_object> new_object = std::make_shared<camaroo_object>();
             new_object->variable_type = TokenType::num;
             new_object->variable_value = value;
@@ -112,16 +126,15 @@ namespace camaroo_core {
             try {
                 value = std::get<int64_t>(left->variable_value) / std::get<int64_t>(right->variable_value);
             }
-            catch(const std::exception& e) {
+            catch (const std::exception& e) {
                 std::cerr << e.what() << '\n';
             }
-            
+
             std::shared_ptr<camaroo_object> new_object = std::make_shared<camaroo_object>();
             new_object->variable_type = TokenType::num;
             new_object->variable_value = value;
             return new_object;
         }
-
         return nullptr;
     }
 }

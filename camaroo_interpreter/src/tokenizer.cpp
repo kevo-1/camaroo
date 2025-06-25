@@ -28,18 +28,10 @@ namespace camaroo_core {
     }
 
     TokenType Tokenizer::check_std_type(const std::string& result) {
-        if (result == "num8") {
-            return TokenType::num8_type;
-        } else if (result == "num16") {
-            return TokenType::num16_type;
-        } else if (result == "num32") {
-            return TokenType::num32_type;
-        } else if (result == "num64") {
-            return TokenType::num64_type;
-        } else if (result == "fnum32") {
-            return TokenType::fnum32_type;
-        } else if (result == "fnum64") {
-            return TokenType::fnum64_type;
+        if (result == "num") {
+            return TokenType::num_type;
+        } else if (result == "fnum") {
+            return TokenType::fnum_type;
         } else if (result == "text") {
             return TokenType::text_type;
         } else if (result == "letter") {
@@ -123,7 +115,7 @@ namespace camaroo_core {
                 while (true) {
                     if (current_char == '\0')
                         break;
-                    if (current_char == '\"' && result[result.size()-1] != '\\') {
+                    if (current_char == '\"') {
                         result += current_char;
                         advance();
                         break;

@@ -1,5 +1,5 @@
-num64 y = 3;
-num64 x = 4 + y;
+num y = 3;
+num x = 4 + y;
 x = 3;
 
-print(x);
+print("Hello, world!\n");

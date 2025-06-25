@@ -21,8 +21,8 @@ namespace camaroo_core {
 		LSquareBracket, RSquareBracket,
 		semicolon,
 		// data types
-		num8_type,num16_type,num32_type,num64_type,
-		fnum32_type,fnum64_type,
+		num_type,
+		fnum_type,
 		text_type,letter_type,
 		toggle_type,
 		func_type,

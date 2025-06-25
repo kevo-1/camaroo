@@ -10,26 +10,33 @@ const std::string version = "0.0.1";
 
 camaroo_core::Program program;
 
-void CLI_interface() {
-    std::cout << "Welcome to Camaroo " << version << std::endl << ">>> ";
+void CLI_interface()
+{
+    std::cout << "Welcome to Camaroo " << version << std::endl
+              << ">>> ";
 }
 
-void parse_line(const std::string& text) {
+void parse_line(const std::string &text)
+{
     camaroo_core::Parser parser(text);
     program = parser.parse_program();
 }
 
-void tokenize_line(const std::string& text) {
-   camaroo_core::Tokenizer temp_tokenizer(text);
-   std::optional<camaroo_core::Token> token = temp_tokenizer.next_token();
-   while (token.has_value()) {
+void tokenize_line(const std::string &text)
+{
+    camaroo_core::Tokenizer temp_tokenizer(text);
+    std::optional<camaroo_core::Token> token = temp_tokenizer.next_token();
+    while (token.has_value())
+    {
         std::cout << '(' << token.value().value << ")\n";
         token = temp_tokenizer.next_token();
-   }
+    }
 }
 
-int main(int argc, char** argv) {
-    if (argc == 2) {
+int main(int argc, char **argv)
+{
+    if (argc == 2)
+    {
         std::ifstream source_file(argv[1]);
         std::string source_code;
 
@@ -38,10 +45,13 @@ int main(int argc, char** argv) {
         source_file.seekg(0, std::ios::beg);
 
         source_code.assign(std::istreambuf_iterator<char>(source_file),
-                    std::istreambuf_iterator<char>());
+                           std::istreambuf_iterator<char>());
 
         camaroo_core::Parser parser(source_code);
         program = parser.parse_program();
+        if (!program.has_compiled) {
+            return -1; // should be replaced by error
+        }
         camaroo_core::evaluator evalute;
         evalute.evaluate_program(program);
         return 0;
@@ -49,14 +59,28 @@ int main(int argc, char** argv) {
 
     CLI_interface();
     camaroo_core::evaluator evalute;
-    while (true) {
-        std::string line; 
+    while (true)
+    {
+        std::string line;
         std::getline(std::cin, line);
-        if (line == "exit") break;
+        
+        std::string newLine;
+        for (int i = 0; i < line.size(); i++) {
+            if (line[i] == '\\') {
+                i++;
+            }
+
+            newLine += line[i];
+        }
+
+        if (newLine == "exit")
+            break;
         // tokenize_line(line);
-        parse_line(line);
+        parse_line(newLine);
+        if (!program.has_compiled) {
+            return -1; // should be replaced by error
+        }
         evalute.evaluate_program(program);
         std::cout << ">>> ";
     }
-
 }

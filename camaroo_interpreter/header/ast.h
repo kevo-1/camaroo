@@ -181,4 +181,20 @@ namespace camaroo_core {
     private:
         std::unique_ptr<ExpressionNode> expr;
     };
+
+    class TextExpr : public ExpressionNode {
+    public:
+        TextExpr(const Token& token)
+            :text_token(token) {
+            literal_value = text_token.value;
+        }
+
+        virtual TokenType token_type() override { return text_token.type; }
+        virtual ASTValue token_value() override { return literal_value; }
+        virtual std::string to_string() override { return "Text: " + text_token.value; }
+
+        private:
+        Token text_token; // No nodes
+        std::string literal_value;
+    };
 }

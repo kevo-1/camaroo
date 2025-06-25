@@ -4,6 +4,7 @@
 #include <float.h>
 #include <memory>
 #include <string>
+#include <iostream>
 
 namespace camaroo_core {
 
@@ -19,14 +20,13 @@ namespace camaroo_core {
         prefix_fns[TokenType::fnum] = [this]() -> expr_ptr { return this->parse_fnum_expr(); };
         prefix_fns[TokenType::toggle] = [this]() -> expr_ptr { return this->parse_toggle_expr(); };
         prefix_fns[TokenType::LParen] = [this]() -> expr_ptr { return this->parse_grouped_expr(); };
+        prefix_fns[TokenType::text] = [this]() -> expr_ptr { return this->parse_text_expr(); };
         //Types
-        prefix_fns[TokenType::num8_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };
-        prefix_fns[TokenType::num16_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };
-        prefix_fns[TokenType::num32_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };
-        prefix_fns[TokenType::num64_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };
-        prefix_fns[TokenType::fnum64_type] = [this]() -> expr_ptr { return this->parse_fnum_expr(); };
+        prefix_fns[TokenType::num_type] = [this]() -> expr_ptr { return this->parse_num_expr(); };
+        prefix_fns[TokenType::fnum_type] = [this]() -> expr_ptr { return this->parse_fnum_expr(); };
         prefix_fns[TokenType::toggle_type] = [this]() -> expr_ptr { return this->parse_toggle_expr(); };
         prefix_fns[TokenType::subtract] = [this]() -> expr_ptr { return this->parse_prefix_expr(); };
+        prefix_fns[TokenType::text_type] = [this]() -> expr_ptr { return this->parse_text_expr(); };
         // Operations
         infix_fns[TokenType::add] = [this](expr_ptr expr) -> expr_ptr { return this->parse_infix_expr(std::move(expr)); };
         infix_fns[TokenType::subtract] = [this](expr_ptr expr) -> expr_ptr { return this->parse_infix_expr(std::move(expr)); };
@@ -114,21 +114,14 @@ namespace camaroo_core {
                 case TokenType::unknown:
                     errors.push_back("Unknown token: " + current_token.value().value);
                     break;
-                case TokenType::num8_type:
-                case TokenType::num16_type:
-                case TokenType::num32_type:
-                case TokenType::num64_type:
-                case TokenType::fnum64_type:
+                case TokenType::num_type:
+                case TokenType::fnum_type:
                 case TokenType::toggle_type:
                 case TokenType::identifier:
                     stmnt = parse_assign_stmnt();
-                    if (errors.size() > 0)
-                        return program;
                     break;
                 case TokenType::print:
                     stmnt = parse_print_stmnt();
-                    if (errors.size() > 0)
-                        return program;
                     break;
                 default:
                     break;
@@ -136,12 +129,17 @@ namespace camaroo_core {
 
             if (stmnt) {
                 program.statements.push_back(std::move(stmnt));
-            } else {
-                errors.push_back("Error: statement is incorrect at " + current_token.value().value);
-                return program;
             }
             advance_token();
         }
+
+        if (!errors.empty()) {
+            for (const auto& err : errors) {
+                std::cerr << err << '\n';
+            }
+            program.has_compiled = false;
+        }
+
         return program;
     }
 
@@ -161,9 +159,17 @@ namespace camaroo_core {
 
     std::unique_ptr<AssignStmnt> Parser::parse_assign_stmnt() {
         Token assign_type = {TokenType::equal, "equal"};
+
         if (!validate_token(Token{TokenType::identifier, "identifier"}, false)) {
-             assign_type = current_token.value();
-             advance_token();
+            assign_type = current_token.value();
+            advance_token();
+        } else {
+            if (next_token.has_value() && next_token.value().type == TokenType::identifier) {
+                std::string msg = "Error: expected previous token to be a type"
+                                " but found, " + (current_token.has_value() ? current_token.value().value : "null");
+                errors.push_back(msg);
+                return nullptr;
+            }
         }
 
         std::unique_ptr<IdentifierNode> id = nullptr;
@@ -312,4 +318,11 @@ namespace camaroo_core {
         return nullptr;
     }
 
+    std::unique_ptr<ExpressionNode> Parser::parse_text_expr() {
+        if (current_token.value().type == TokenType::semicolon)
+            return std::unique_ptr<TextExpr>(new TextExpr(Token({TokenType::text, ""})));
+
+        Token newToken = {TokenType::text, current_token.value().value.substr(1, current_token.value().value.size()-2)};
+        return std::unique_ptr<TextExpr>(new TextExpr(newToken));
+    }
 }
