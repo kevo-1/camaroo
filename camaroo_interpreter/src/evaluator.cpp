@@ -13,6 +13,7 @@ namespace camaroo_core {
                 std::string variable_name = std::get<std::string>(id->token_value());
                 std::shared_ptr<camaroo_object> variable_value = evaluate_expression(statement->get_right());
                 declared_variables.insert({variable_name, variable_value});
+                continue;
             }
 
             if (statement->token_type() == TokenType::equal) {
@@ -20,6 +21,7 @@ namespace camaroo_core {
                 std::string variable_name = std::get<std::string>(id->token_value());
                 std::shared_ptr<camaroo_object> variable_value = evaluate_expression(statement->get_right());
                 declared_variables[variable_name] = variable_value;
+                continue;
             }
 
             if (statement->token_type() == TokenType::print) {
@@ -27,6 +29,7 @@ namespace camaroo_core {
                 if (value->variable_type == TokenType::num) {
                     printf("%i", std::get<int64_t>(value->variable_value));
                 }
+                continue;
             }
         }
     }
@@ -37,10 +40,10 @@ namespace camaroo_core {
         }
 
         if (statement->token_type() == TokenType::identifier) {
-            if (declared_variables.contains(std::get<std::string>(statement->token_value()))) {
-                return declared_variables[std::get<std::string>(statement->token_value())];
-            } else {
-                // TODO: Error handelling
+            try {
+                declared_variables[std::get<std::string>(statement->token_value())];
+            } catch(const std::exception& e) {
+                std::cerr << e.what() << '\n';
             }
         }
 
@@ -54,8 +57,65 @@ namespace camaroo_core {
         if (statement->token_type() == TokenType::add) {
             std::shared_ptr<camaroo_object> left = evaluate_expression(statement->get_left());
             std::shared_ptr<camaroo_object> right = evaluate_expression(statement->get_right());
-            int64_t value = std::get<int64_t>(left->variable_value) + std::get<int64_t>(right->variable_value);
+            int64_t value;
+            try {
+                value = std::get<int64_t>(left->variable_value) + std::get<int64_t>(right->variable_value);
+            }
+            catch(const std::exception& e) {
+                std::cerr << e.what() << '\n';
+            }
 
+            std::shared_ptr<camaroo_object> new_object = std::make_shared<camaroo_object>();
+            new_object->variable_type = TokenType::num;
+            new_object->variable_value = value;
+            return new_object;
+        }
+
+        if (statement->token_type() == TokenType::subtract) {
+            std::shared_ptr<camaroo_object> left = evaluate_expression(statement->get_left());
+            std::shared_ptr<camaroo_object> right = evaluate_expression(statement->get_right());
+            int64_t value;
+            try {
+                value = std::get<int64_t>(left->variable_value) - std::get<int64_t>(right->variable_value);
+            }
+            catch(const std::exception& e) {
+                std::cerr << e.what() << '\n';
+            }
+
+            std::shared_ptr<camaroo_object> new_object = std::make_shared<camaroo_object>();
+            new_object->variable_type = TokenType::num;
+            new_object->variable_value = value;
+            return new_object;
+        }
+
+        if (statement->token_type() == TokenType::multiply) {
+            std::shared_ptr<camaroo_object> left = evaluate_expression(statement->get_left());
+            std::shared_ptr<camaroo_object> right = evaluate_expression(statement->get_right());
+            int64_t value;
+            try {
+                value = std::get<int64_t>(left->variable_value) * std::get<int64_t>(right->variable_value);
+            }
+            catch(const std::exception& e) {
+                std::cerr << e.what() << '\n';
+            }
+            
+            std::shared_ptr<camaroo_object> new_object = std::make_shared<camaroo_object>();
+            new_object->variable_type = TokenType::num;
+            new_object->variable_value = value;
+            return new_object;
+        }
+
+        if (statement->token_type() == TokenType::division) {
+            std::shared_ptr<camaroo_object> left = evaluate_expression(statement->get_left());
+            std::shared_ptr<camaroo_object> right = evaluate_expression(statement->get_right());
+            int64_t value;
+            try {
+                value = std::get<int64_t>(left->variable_value) / std::get<int64_t>(right->variable_value);
+            }
+            catch(const std::exception& e) {
+                std::cerr << e.what() << '\n';
+            }
+            
             std::shared_ptr<camaroo_object> new_object = std::make_shared<camaroo_object>();
             new_object->variable_type = TokenType::num;
             new_object->variable_value = value;

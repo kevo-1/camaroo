@@ -17,15 +17,6 @@ void CLI_interface() {
 void parse_line(const std::string& text) {
     camaroo_core::Parser parser(text);
     program = parser.parse_program();
-
-    for (const auto& stmnt : program.statements)
-        std::cout << stmnt->to_string() << "\n";
-
-    if (parser.errors.size() > 0) {
-        for (const auto& err : parser.errors)
-            std::cout << err << "\n";
-    }
-
 }
 
 void tokenize_line(const std::string& text) {
@@ -57,18 +48,14 @@ int main(int argc, char** argv) {
     }
 
     CLI_interface();
+    camaroo_core::evaluator evalute;
     while (true) {
         std::string line; 
         std::getline(std::cin, line);
         if (line == "exit") break;
         // tokenize_line(line);
         parse_line(line);
-        camaroo_core::evaluator evalute;
         evalute.evaluate_program(program);
-        for (const auto& var : evalute.get_variables()) {
-            std::cout << var.first << ": " << std::get<int64_t>(var.second->variable_value) << std::endl;
-        }
-
         std::cout << ">>> ";
     }
 
