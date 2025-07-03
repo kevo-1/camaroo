@@ -173,6 +173,8 @@ namespace camaroo_core {
         PrintStmnt(std::unique_ptr<ExpressionNode> printable)
             :expr(std::move(printable)) {}
 
+        PrintStmnt(): expr(nullptr) {}
+        
         virtual TokenType token_type() override { return TokenType::print; }
         virtual ASTValue token_value() override { return "print"; }
         virtual std::string to_string() override { return "Print: " + expr->to_string(); }
@@ -180,6 +182,33 @@ namespace camaroo_core {
         virtual ASTNode* get_right() override { return expr.get(); }
     private:
         std::unique_ptr<ExpressionNode> expr;
+    };
+
+    class PrintlnStmnt : public PrintStmnt {
+    public:
+        PrintlnStmnt(std::unique_ptr<ExpressionNode> printable)
+            :expr(std::move(printable)) {}
+
+        virtual TokenType token_type() override { return TokenType::println; }
+        virtual ASTValue token_value() override { return "println"; }
+        virtual std::string to_string() override { return "Println: " + expr->to_string(); }
+
+        virtual ASTNode* get_right() override { return expr.get(); }
+    private:
+        std::unique_ptr<ExpressionNode> expr;
+    };
+
+    class BlockStmnt : public StatementNode {
+    public:
+    BlockStmnt(Token token)
+    : token(token){}
+    
+    virtual TokenType token_type() override { return token.type; }
+    virtual ASTValue token_value() override { return token.value; }
+    virtual std::string to_string() override { return token.value; }
+    
+    private:
+        Token token;
     };
 
     class TextExpr : public ExpressionNode {

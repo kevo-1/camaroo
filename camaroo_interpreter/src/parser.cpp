@@ -121,7 +121,11 @@ namespace camaroo_core {
                     stmnt = parse_assign_stmnt();
                     break;
                 case TokenType::print:
+                case TokenType::println:
                     stmnt = parse_print_stmnt();
+                    break;
+                case TokenType::LCurlyBrace:
+                    stmnt = parse_block_stmnt();
                     break;
                 default:
                     break;
@@ -144,6 +148,7 @@ namespace camaroo_core {
     }
 
     std::unique_ptr<PrintStmnt> Parser::parse_print_stmnt() {
+        TokenType type = current_token.value().type;
         advance_token();
         if (!validate_token({TokenType::LParen, "("}))
             return nullptr;
@@ -154,6 +159,9 @@ namespace camaroo_core {
         if (!validate_token({TokenType::semicolon, ";"}))
             return nullptr;
 
+        if(type == TokenType::println) {
+            return (expr) ? std::make_unique<PrintlnStmnt>(std::move(expr)) : nullptr;
+        }
         return (expr) ? std::make_unique<PrintStmnt>(std::move(expr)) : nullptr;
     }
 
@@ -324,5 +332,12 @@ namespace camaroo_core {
 
         Token newToken = {TokenType::text, current_token.value().value.substr(1, current_token.value().value.size()-2)};
         return std::unique_ptr<TextExpr>(new TextExpr(newToken));
+    }
+
+    std::unique_ptr<StatementNode> Parser::parse_block_stmnt() {
+        if(current_token.has_value())
+            return std::unique_ptr<BlockStmnt>(new BlockStmnt(current_token.value()));
+        else 
+            return nullptr; 
     }
 }

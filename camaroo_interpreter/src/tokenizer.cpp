@@ -50,6 +50,8 @@ namespace camaroo_core {
             return TokenType::not_operator;
         } else if (result == "print") {
             return TokenType::print;
+        } else if (result == "println") {
+            return TokenType::println;
         } else {
             return TokenType::identifier;
         }

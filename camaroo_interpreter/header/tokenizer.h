@@ -3,6 +3,7 @@
 #include <optional>
 
 namespace camaroo_core {
+
     enum class TokenType {
         unknown = 0,
         identifier,
@@ -27,6 +28,7 @@ namespace camaroo_core {
         func_type,
         // print
         print,
+        println,
     };
 
     struct Token {

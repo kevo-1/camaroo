@@ -1,2 +1,5 @@
 print("Hello world");
+println("Hello World");
+num x = 34;
+println(x);
 print(x);

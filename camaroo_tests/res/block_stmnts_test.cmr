@@ -1,0 +1,8 @@
+{
+    print("Hello World\n");
+    num x = 5;
+    print(x);
+    num y = 2;
+    print(x*y);
+    print(x-y);
+}

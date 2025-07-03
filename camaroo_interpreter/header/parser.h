@@ -31,6 +31,7 @@ namespace camaroo_core {
         std::unique_ptr<ExpressionNode> parse_toggle_expr();
         std::unique_ptr<ExpressionNode> parse_prefix_expr();
         std::unique_ptr<ExpressionNode> parse_text_expr();
+        std::unique_ptr<StatementNode> parse_block_stmnt();
     private:
         void advance_token();
         ExprOrder current_precedence();

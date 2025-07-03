@@ -37,6 +37,16 @@ namespace camaroo_core {
                 }
                 continue;
             }
+
+            if (statement->token_type() == TokenType::println) {
+                std::shared_ptr<camaroo_object> value = evaluate_expression(statement->get_right());
+                if (value->variable_type == TokenType::num) {
+                    printf("%i\n", std::get<int64_t>(value->variable_value));
+                } else if (value->variable_type == TokenType::text) {
+                    std::cout << std::get<std::string>(value->variable_value) << '\n';
+                }
+                continue;
+            }
         }
     }
 
