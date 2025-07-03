@@ -602,6 +602,56 @@ TEST (printing_test, handling_print_statments) {
 
     token = tokentest.next_token();
     EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::println);
+    EXPECT_TRUE(token.value().value == "println");
+
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::LParen);
+    EXPECT_TRUE(token.value().value == "(");
+
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::text);
+    EXPECT_TRUE(token.value().value == "\"Hello world\"");
+
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::RParen);
+    EXPECT_TRUE(token.value().value == ")");
+    
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::semicolon);
+    EXPECT_TRUE(token.value().value == ";");
+
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::println);
+    EXPECT_TRUE(token.value().value == "println");
+
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::LParen);
+    EXPECT_TRUE(token.value().value == "(");
+
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::identifier);
+    EXPECT_TRUE(token.value().value == "x");
+
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::RParen);
+    EXPECT_TRUE(token.value().value == ")");
+
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
+    EXPECT_TRUE(token.value().type == camaroo_core::TokenType::semicolon);
+    EXPECT_TRUE(token.value().value == ";");
+
+    token = tokentest.next_token();
+    EXPECT_TRUE(token.has_value() == true);
     EXPECT_TRUE(token.value().type == camaroo_core::TokenType::print);
     EXPECT_TRUE(token.value().value == "print");
 

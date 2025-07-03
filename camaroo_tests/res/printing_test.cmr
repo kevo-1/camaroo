@@ -1,5 +1,4 @@
 print("Hello world");
-println("Hello World");
-num x = 34;
+println("Hello world");
 println(x);
 print(x);
