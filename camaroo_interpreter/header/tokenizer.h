@@ -28,6 +28,7 @@ namespace camaroo_core {
 		func_type,
 		// print
 		print,
+		println,
 	};
 
 	struct Token {

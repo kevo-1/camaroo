@@ -121,6 +121,7 @@ namespace camaroo_core {
                     stmnt = parse_assign_stmnt();
                     break;
                 case TokenType::print:
+                case TokenType::println:
                     stmnt = parse_print_stmnt();
                     break;
                 case TokenType::LCurlyBrace:
@@ -147,6 +148,7 @@ namespace camaroo_core {
     }
 
     std::unique_ptr<PrintStmnt> Parser::parse_print_stmnt() {
+        TokenType type = current_token.value().type;
         advance_token();
         if (!validate_token({TokenType::LParen, "("}))
             return nullptr;
@@ -157,6 +159,9 @@ namespace camaroo_core {
         if (!validate_token({TokenType::semicolon, ";"}))
             return nullptr;
 
+        if(type == TokenType::println) {
+            return (expr) ? std::make_unique<PrintlnStmnt>(std::move(expr)) : nullptr;
+        }
         return (expr) ? std::make_unique<PrintStmnt>(std::move(expr)) : nullptr;
     }
 
