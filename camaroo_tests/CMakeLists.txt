@@ -8,6 +8,8 @@ set(BIN_NAME "test-${CMAKE_SYSTEM_NAME}-${ARCHITECTURE}")
 set(TEST_HEADER "${CMAKE_SOURCE_DIR}/camaroo_tests/header/")
 set(CAMAROO_HEADER "${CMAKE_SOURCE_DIR}/camaroo_interpreter/header/")
 
+set(CMAKE_CXX_FLAGS_DEBUG "/MTd")
+
 # GoogleTest stuff
 set(GOOGLE_HEADER "${CMAKE_SOURCE_DIR}/third_party/googletest/include")
 

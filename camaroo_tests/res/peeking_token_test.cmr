@@ -1,2 +1,2 @@
-num32 x = 5;
-fnum64 y = 4;
+num x = 5;
+fnum y = 4;

@@ -126,6 +126,13 @@ namespace camaroo_core {
                             result += '\n';
                         } else if (current_char == 't') {
                             result += '\t';
+                        } else if (current_char == '\"') {
+                            result += '\"';
+                        }
+                        else if (current_char == '\'') {
+                            result += '\'';
+                        } else {
+                            result += '\\';
                         }
                         advance();
                         continue;

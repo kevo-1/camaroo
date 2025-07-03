@@ -27,11 +27,13 @@ project(Camaroo)
 if (NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE Debug)
 endif()
+
 # Set architecture to either 32 or 64 depending on system
 set(ARCHITECTURE "32")
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
 	set(ARCHITECTURE "64")
 endif()
+
 # OutputDir to be used for all projects
 set(OutputDir "${CMAKE_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE}")
 

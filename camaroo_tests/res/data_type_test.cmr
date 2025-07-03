@@ -1,10 +1,10 @@
 toggle
-fnum32
-num32
-num64
+fnum
+num
+num
 text
 letter
 func
-num8
-num16
-fnum64
+num
+num
+fnum
