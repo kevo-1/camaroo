@@ -182,6 +182,19 @@ namespace camaroo_core {
         std::unique_ptr<ExpressionNode> expr;
     };
 
+    class BlockStmnt : public StatementNode {
+    public:
+    BlockStmnt(Token token)
+    : token(token){}
+    
+    virtual TokenType token_type() override { return token.type; }
+    virtual ASTValue token_value() override { return token.value; }
+    virtual std::string to_string() override { return token.value; }
+    
+    private:
+        Token token;
+    };
+
     class TextExpr : public ExpressionNode {
     public:
         TextExpr(const Token& token)
